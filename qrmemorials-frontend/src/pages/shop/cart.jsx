@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 
-import NavbarOne from "../../components/navbar/navbar-one";
+import NavbarOne from "../../components/navbar/navbar-one.jsx";
 import IncreDre from "../../components/incre-dre";
 import FooterOne from "../../components/footer/footer-one";
 import ScrollToTop from "../../components/scroll-to-top";

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
 
-import NavbarOne from "../../components/navbar/navbar-one";
+import NavbarOne from "../../components/navbar/navbar-one.jsx";
 import bg from '../../assets/img/shortcode/breadcumb.jpg'
 import AccountTab from "../../components/account/account-tab";
 import FooterOne from "../../components/footer/footer-one";

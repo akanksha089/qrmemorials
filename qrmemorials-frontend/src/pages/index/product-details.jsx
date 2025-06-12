@@ -9,7 +9,7 @@ import product3 from '../../assets/img/gallery/product-detls/product-03.jpg'
 import product4 from '../../assets/img/gallery/product-detls/product-04.jpg'
 
 import IncreDre from '../../components/incre-dre';
-import NavbarOne from '../../components/navbar/navbar-one';
+import NavbarOne from '../../components/navbar/navbar-one.jsx';
 import FooterOne from '../../components/footer/footer-one';
 import DetailTab from '../../components/product/detail-tab';
 import LayoutOne from '../../components/product/layout-one';
