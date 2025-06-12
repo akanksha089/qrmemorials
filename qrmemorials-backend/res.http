@@ -1,0 +1,183 @@
+### Get all users
+GET http://localhost:4000/api/v1/course/django
+Accept: application/json
+
+###
+
+### Get a single user
+GET http://localhost:4000/api/v1/api-me
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzQ5MjEyNzI3LCJleHAiOjE3NDk2NDQ3Mjd9.iO_FddW9eyTjLErEIvQ3uxUGZdiav9E0ZA5_v5AJEf8
+
+### Get all pakacges
+GET http://localhost:4000/api/v1/api-packages
+Accept: application/json
+
+
+### Get a single pakacge
+GET http://localhost:4000/api/v1/api-packages/11
+Accept: application/json
+
+
+
+### Get a cart data
+GET http://localhost:4000/api/v1/cart
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzQ5MjEyNzI3LCJleHAiOjE3NDk2NDQ3Mjd9.iO_FddW9eyTjLErEIvQ3uxUGZdiav9E0ZA5_v5AJEf8
+
+
+
+### Create a new user
+POST http://localhost:4000/admin/register
+Content-Type: application/json
+
+{
+  "email": "admin@gmail.com",
+  "password": "12345678",
+  "name":"akanksha",
+  "role":"admin"
+}
+
+### Create a new user
+POST http://localhost:4000/api/v1/api-register
+Content-Type: application/json
+
+{
+  "email": "akanksha@mailinator.com",
+  "password": "12345678",
+  "confirmPassword": "12345678",
+  "name":"akanksha",
+  "role":"user"
+}
+
+### Create a new user
+POST http://localhost:4000/api/v1/api-login
+Content-Type: application/json
+
+{
+  "email": "akanksha@mailinator.com",
+  "password": "12345678"
+}
+
+### Create a new user
+POST http://localhost:4000/api/v1/api-password/update
+Content-Type: application/json
+
+{
+  "newPassword": "123456",
+  "confirmPassword": "123456",
+  "confirmPassword": "12345678"
+}
+
+### Create a new cart in item
+POST http://localhost:4000/api/v1/cart/add
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzQ5MjEyNzI3LCJleHAiOjE3NDk2NDQ3Mjd9.iO_FddW9eyTjLErEIvQ3uxUGZdiav9E0ZA5_v5AJEf8
+
+{
+  "package_id": "11",
+  "quantity": "1"
+}
+
+### Create a shipping
+POST http://localhost:4000/api/v1/add-shipping
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzQ3OTk3NzA1LCJleHAiOjE3NDg0Mjk3MDV9.ZP4R8e0srQDFC-MWu9VibO3Eu-rmdqgFHCIj1DxGnqY
+
+
+{
+  "first_name": "Alice",
+  "last_name": "Smith",
+  "country": "Canada",
+  "address": "456 Maple Street",
+  "city": "Toronto",
+  "state": "Ontario",
+  "postal_code": "M5J 2N1"
+}
+### Create a billing
+POST http://localhost:4000/api/v1/add-billing
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzQ3OTk3NzA1LCJleHAiOjE3NDg0Mjk3MDV9.ZP4R8e0srQDFC-MWu9VibO3Eu-rmdqgFHCIj1DxGnqY
+
+
+{
+  "first_name": "Alice",
+  "last_name": "Smith",
+  "email": "alice@mailinator.com",
+  "phone": "9876543210",
+  "country": "Canada",
+  "address": "456 Maple Street",
+  "city": "Toronto",
+  "state": "Ontario",
+  "postal_code": "M5J 2N1"
+}
+
+### Create a order
+POST http://localhost:4000/api/v1/create-order
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzQ3OTk3NzA1LCJleHAiOjE3NDg0Mjk3MDV9.ZP4R8e0srQDFC-MWu9VibO3Eu-rmdqgFHCIj1DxGnqY
+
+
+{
+   "user": {
+    "id": 3,
+    "name": "akanksha",
+    "email": "akanksha@mailinator.com"
+  },
+   "shipping": {
+  "first_name": "Alice",
+  "last_name": "Smith",
+  "country": "Canada",
+  "address": "456 Maple Street",
+  "city": "Toronto",
+  "state": "Ontario",
+  "postal_code": "M5J 2N1"
+},
+   "billing": {
+ "first_name": "Alice",
+  "last_name": "Smith",
+  "email": "alice@mailinator.com",
+  "phone": "9876543210",
+  "country": "Canada",
+  "address": "456 Maple Street",
+  "city": "Toronto",
+  "state": "Ontario",
+  "postal_code": "M5J 2N1"
+  },
+  "payment": {
+    "method": "COD",
+    "amount": 199.99,
+    "status": "pending",
+    "transaction_id": ""
+  },
+  "order_status": "pending",
+    "products": [
+    {
+      "product_id": 11,
+      "name": "Essential QR Memorial Package 05",
+      "quantity": 1,
+      "price": 199.00
+    }
+    ]
+}
+
+###
+
+### Update a user
+PUT http://localhost:4000/api/v1/api-password/reset/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiaWF0IjoxNzQ1NTA0MDQwLCJleHAiOjE3NDU5MzYwNDB9.zZdBXkjDF7u9R0SxcI0NUnJ0SMfnkuI7vpUdVFGUwiE
+Content-Type: application/json
+
+{
+  "password": "123456",
+  "confirmPassword": "123456"
+}
+
+###
+
+### Delete a user
+DELETE http://localhost:4000/api/v1/cart/delete/4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzQ5NjQ1NDIyLCJleHAiOjE3NTAwNzc0MjJ9.AQmvs1lW-5zpUGKuvKsDT_QDf1yetWWb4muNelwWYgg
+
+{
+
+}

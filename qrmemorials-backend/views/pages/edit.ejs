@@ -1,0 +1,22 @@
+<h2>Edit Quiz</h2>
+<form action="/admin/quiz/edit/<%= quiz.id %>" method="POST">
+  <label>Course:</label>
+  <select name="course_id">
+    <% courses.forEach(course => { %>
+      <option value="<%= course.id %>" <%= course.id === quiz.course_id ? 'selected' : '' %>><%= course.title %></option>
+    <% }) %>
+  </select><br><br>
+
+  <label>Question:</label><br>
+  <input type="text" name="question" value="<%= quiz.question %>" required><br><br>
+
+  <label>Options:</label><br>
+  <% quiz.options.forEach((opt, index) => { %>
+    <input type="text" name="options[]" value="<%= opt %>" required><br>
+  <% }) %><br>
+
+  <label>Correct Answer:</label><br>
+  <input type="text" name="correct_answer" value="<%= quiz.correct_answer %>" required><br><br>
+
+  <button type="submit">Update Quiz</button>
+</form>

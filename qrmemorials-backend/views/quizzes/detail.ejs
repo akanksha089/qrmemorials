@@ -1,0 +1,36 @@
+<h1><%= blog.title %> - Details</h1>
+
+<div class="card mt-4">
+  <div class="card-body">
+    <p><strong>Course:</strong> <%= blog.course_title %></p>
+    <p><strong>Quiz Time:</strong> <%= blog.quiz_time %> minutes</p>
+    <p><strong>Total Questions:</strong> <%= blog.questions ? blog.questions.length : 0 %></p>
+  </div>
+</div>
+
+<hr>
+
+<h3 class="mt-4">Questions</h3>
+<% if (blog.questions && blog.questions.length > 0) { %>
+  <% blog.questions.forEach((q, index) => { %>
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5>Q<%= index + 1 %>: <%= q.question %></h5>
+        <ul class="list-group mt-2">
+          <% ['a', 'b', 'c', 'd'].forEach(opt => { %>
+            <li class="list-group-item <% if (q.correct_answer === opt) { %>list-group-item-success<% } %>">
+              <strong><%= opt.toUpperCase() %>:</strong> <%= q['option_' + opt] %>
+              <% if (q.correct_answer === opt) { %>
+                <span class="badge bg-success ms-2">Correct</span>
+              <% } %>
+            </li>
+          <% }); %>
+        </ul>
+      </div>
+    </div>
+  <% }); %>
+<% } else { %>
+  <p>No questions found for this quiz.</p>
+<% } %>
+
+<a href="/admin/<%= module_slug %>" class="btn btn-secondary">Back to List</a>

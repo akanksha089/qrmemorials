@@ -1,0 +1,54 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body table-responsive">
+                <div class="row page_top_bar">
+                    <div class="col-12">
+                        <div class="col-6 heading float-left">
+                            <h4 class="mt-0 header-title"><%= title %></h4>
+                        </div>
+                        <div class="col-6 btns float-left text-right">
+                            <a class="btn btn-primary" href="/admin/<%= module_slug %>/add">Add New</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <table id="responsive-datatable" class="table table-bordered table-bordered dt-responsive nowrap">
+                    <thead>
+                        <tr>
+                            <th>S.No.</th>
+                            <th>Title</th>
+                            <th>Price</th>
+                            <th>Created At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% let serialNumber = 1; %>
+                        <% if (records && records.length) { %>
+                            <% records.forEach(function(pkg) { %>
+                                <tr>
+                                    <td><%= serialNumber++ %></td>
+                                    <td><%= pkg.title %></td>
+                                    <td>₹<%= pkg.price %></td>
+                                    <td>
+                                      <%= new Date(pkg.created_at).toLocaleString() %>
+                                    </td>
+                                    <td class="action_box">
+                                        <a href="/admin/<%= module_slug %>/<%= pkg.id %>"><i class="fe-eye"></i></a>
+                                        <a href="/admin/<%= module_slug %>/edit/<%= pkg.id %>"><i class="fe-edit"></i></a>
+                                        <a href="/admin/<%= module_slug %>/delete/<%= pkg.id %>"><i class="fe-trash-2"></i></a>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="5" class="text-center">No records found</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div> <!-- end row -->

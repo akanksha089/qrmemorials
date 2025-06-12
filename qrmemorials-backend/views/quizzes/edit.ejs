@@ -1,0 +1,138 @@
+<h1><%= title %></h1>
+
+<div class="container mt-4">
+  <form action="/admin/<%= module_slug %>/update/<%= blog.id %>" method="POST">
+    <!-- Quiz Title -->
+    <div class="form-group mb-3">
+      <label>Quiz Title</label>
+      <input type="text" name="title" class="form-control" value="<%= blog.title %>" required />
+    </div>
+
+    <!-- Course Dropdown -->
+    <div class="form-group mb-3">
+      <label>Course</label>
+      <select name="courseId" class="form-control" required>
+        <% courses.forEach(course => { %>
+          <option value="<%= course.id %>" <%= blog.course_id == course.id ? "selected" : "" %>>
+            <%= course.title %>
+          </option>
+        <% }); %>
+      </select>
+    </div>
+
+    <!-- Quiz Time -->
+    <div class="form-group mb-3">
+      <label>Quiz Time (in minutes)</label>
+      <input type="number" name="quiz_time" class="form-control" value="<%= blog.quiz_time %>" required />
+    </div>
+
+    <hr />
+    <h4>Questions</h4>
+    <div id="questions-wrapper">
+      <% (questions  || []).forEach((q, index) => { %>
+        <div class="question-block mb-4">
+          <!-- Question ID (hidden) -->
+          <input type="hidden" class="question-id" value="<%= q.id %>" />
+
+          <div class="form-group mb-2">
+            <label>Question</label>
+            <input type="text" class="form-control question-input" value="<%= q.question %>" required />
+          </div>
+
+          <% ['a', 'b', 'c', 'd'].forEach(opt => { %>
+            <div class="form-group mb-2">
+              <label>Option <%= opt.toUpperCase() %></label>
+              <input type="text" class="form-control option-<%= opt %>-input" value="<%= q['option_' + opt] %>" required />
+            </div>
+          <% }); %>
+
+          <div class="form-group mb-2">
+            <label>Correct Answer</label>
+            <select class="form-control correct-answer-select" required>
+              <% ['a', 'b', 'c', 'd'].forEach(opt => { %>
+                <option value="<%= opt %>" <%= q.correct_answer === opt ? "selected" : "" %>>
+                  <%= opt.toUpperCase() %>
+                </option>
+              <% }); %>
+            </select>
+          </div>
+
+          <button type="button" class="btn btn-danger btn-sm remove-question">Remove Question</button>
+          <hr />
+        </div>
+      <% }); %>
+    </div>
+
+    <!-- Hidden field to send all questions -->
+    <input type="hidden" name="questions_json" id="questions_json" />
+
+    <!-- Add Question Button -->
+    <button type="button" id="add-question" class="btn btn-secondary mb-3">Add Question</button>
+
+    <!-- Submit -->
+    <button type="submit" class="btn btn-primary">Update Quiz</button>
+  </form>
+</div>
+
+<script>
+  let questionIndex = <%= blog.questions ? blog.questions.length : 0 %>;
+
+  // Add new question block
+  document.getElementById('add-question').addEventListener('click', () => {
+    const wrapper = document.getElementById('questions-wrapper');
+    const block = document.createElement('div');
+    block.className = 'question-block mb-4';
+    block.innerHTML = `
+      <!-- Question ID (new question, so no ID) -->
+      <input type="hidden" class="question-id" value="" />
+
+      <div class="form-group mb-2">
+        <label>Question</label>
+        <input type="text" class="form-control question-input" required />
+      </div>
+      ${['a', 'b', 'c', 'd'].map(opt => `
+        <div class="form-group mb-2">
+          <label>Option ${opt.toUpperCase()}</label>
+          <input type="text" class="form-control option-${opt}-input" required />
+        </div>
+      `).join('')}
+      <div class="form-group mb-2">
+        <label>Correct Answer</label>
+        <select class="form-control correct-answer-select" required>
+          ${['a', 'b', 'c', 'd'].map(opt => `<option value="${opt}">${opt.toUpperCase()}</option>`).join('')}
+        </select>
+      </div>
+      <button type="button" class="btn btn-danger btn-sm remove-question">Remove Question</button>
+      <hr />
+    `;
+    wrapper.appendChild(block);
+    questionIndex++;
+  });
+
+  // Remove question block
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('remove-question')) {
+      e.target.closest('.question-block').remove();
+    }
+  });
+
+  // Serialize questions before form submit
+  document.querySelector("form").addEventListener("submit", function () {
+    const questionBlocks = document.querySelectorAll(".question-block");
+    const questions = [];
+
+    questionBlocks.forEach(block => {
+      const id = block.querySelector(".question-id")?.value || null;
+      const question = block.querySelector(".question-input").value;
+      const option_a = block.querySelector(".option-a-input").value;
+      const option_b = block.querySelector(".option-b-input").value;
+      const option_c = block.querySelector(".option-c-input").value;
+      const option_d = block.querySelector(".option-d-input").value;
+      const correct_answer = block.querySelector(".correct-answer-select").value;
+
+      questions.push({ id, question, option_a, option_b, option_c, option_d, correct_answer });
+    });
+
+    document.getElementById("questions_json").value = JSON.stringify(questions);
+  });
+</script>

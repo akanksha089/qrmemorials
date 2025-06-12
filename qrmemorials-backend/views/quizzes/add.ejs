@@ -1,0 +1,114 @@
+<h1><%= title %></h1>
+
+<div class="container mt-4">
+  <form action="/admin/<%= module_slug %>/create" method="POST">
+    <div class="form-group mb-3">
+      <label>Quiz Title</label>
+      <input type="text" name="title" class="form-control" required />
+    </div>
+
+    <div class="form-group mb-3">
+      <label>Course</label>
+      <select name="courseId" class="form-control" required>
+        <% courses.forEach(course => { %>
+          <option value="<%= course.id %>"><%= course.title %></option>
+        <% }); %>
+      </select>
+    </div>
+
+    <div class="form-group mb-3">
+      <label>Quiz Time (in minutes)</label>
+      <input type="number" name="quiz_time" class="form-control" required />
+    </div>
+
+    <hr />
+    <h4>Questions</h4>
+    <div id="questions-wrapper">
+      <div class="question-block mb-4">
+        <div class="form-group mb-2">
+          <label>Question</label>
+          <input type="text" name="questions[0][question]" class="form-control" required />
+        </div>
+
+        <% ['a', 'b', 'c', 'd'].forEach(opt => { %>
+          <div class="form-group mb-2">
+            <label>Option <%= opt.toUpperCase() %></label>
+            <input type="text" name="questions[0][option_<%= opt %>]" class="form-control" required />
+          </div>
+        <% }); %>
+
+        <div class="form-group mb-2">
+          <label>Correct Answer</label>
+          <select name="questions[0][correct_answer]" class="form-control" required>
+            <% ['a', 'b', 'c', 'd'].forEach(opt => { %>
+              <option value="<%= opt %>"><%= opt.toUpperCase() %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <button type="button" class="btn btn-danger btn-sm remove-question">Remove Question</button>
+        <hr />
+      </div>
+    </div>
+    <input type="hidden" name="questions_json" id="questions_json">
+    <button type="button" id="add-question" class="btn btn-secondary mb-3">Add Question</button>
+    <button type="submit" class="btn btn-primary">Save Quiz</button>
+  </form>
+</div>
+
+<script>
+  let questionIndex = 1;
+    // On form submit, collect all questions and serialize
+    const form = document.querySelector("form");
+  form.addEventListener("submit", function (e) {
+    const allQuestionBlocks = document.querySelectorAll(".question-block");
+    const questions = [];
+
+    allQuestionBlocks.forEach(block => {
+      const question = block.querySelector(`input[name*="[question]"]`).value;
+      const option_a = block.querySelector(`input[name*="[option_a]"]`).value;
+      const option_b = block.querySelector(`input[name*="[option_b]"]`).value;
+      const option_c = block.querySelector(`input[name*="[option_c]"]`).value;
+      const option_d = block.querySelector(`input[name*="[option_d]"]`).value;
+      const correct_answer = block.querySelector(`select[name*="[correct_answer]"]`).value;
+
+      questions.push({ question, option_a, option_b, option_c, option_d, correct_answer });
+    });
+
+    document.getElementById("questions_json").value = JSON.stringify(questions);
+  });
+
+  document.getElementById('add-question').addEventListener('click', () => {
+    const wrapper = document.getElementById('questions-wrapper');
+    const questionBlock = document.createElement('div');
+    questionBlock.className = 'question-block mb-4';
+    questionBlock.innerHTML = `
+      <div class="form-group mb-2">
+        <label>Question</label>
+        <input type="text" name="questions[${questionIndex}][question]" class="form-control" required />
+      </div>
+      ${['a', 'b', 'c', 'd'].map(opt => `
+        <div class="form-group mb-2">
+          <label>Option ${opt.toUpperCase()}</label>
+          <input type="text" name="questions[${questionIndex}][option_${opt}]" class="form-control" required />
+        </div>
+      `).join('')}
+      <div class="form-group mb-2">
+        <label>Correct Answer</label>
+        <select name="questions[${questionIndex}][correct_answer]" class="form-control" required>
+          ${['a', 'b', 'c', 'd'].map(opt => `<option value="${opt}">${opt.toUpperCase()}</option>`).join('')}
+        </select>
+      </div>
+      <button type="button" class="btn btn-danger btn-sm remove-question">Remove Question</button>
+      <hr />
+    `;
+    wrapper.appendChild(questionBlock);
+    questionIndex++;
+  });
+
+  document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('remove-question')) {
+      e.target.closest('.question-block').remove();
+    }
+  });
+</script>

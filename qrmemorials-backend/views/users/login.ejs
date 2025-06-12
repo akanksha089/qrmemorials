@@ -1,0 +1,139 @@
+
+<div class="account-pages my-5">
+    <div class="container">
+        
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6 col-xl-4">
+                <% if (typeof message !== 'undefined' && message.length > 0 && typeof message[0].status !== 'undefined' && message[0].status >= 400) { %>
+                    <div class="alert alert-danger"><%= message[0].message %></div> 
+                <% } %>
+                <div class="text-center">   
+                    <!-- <a href="javascript:void()">
+                        <img src="<%- process.env.BACKEND_URL %>/assets/images/logo.png" alt="" height="40" class="mx-auto">
+                    </a> -->
+                    <!-- <p class="text-dark mt-2 mb-4">Admin Dashboard</p> -->
+
+                </div>
+                <div class="card">
+                    <div class="card-body p-4">
+                        
+                        <div class="text-center mb-4">
+                            <h4 class="text-uppercase mt-0">Sign In</h4>
+                        </div>
+
+                        <form id="myForm" action="/admin/login" method="post">
+                            <div class="mb-3">
+                                <label for="emailaddress" class="form-label">Email address</label>
+                                <input class="form-control" name="email" type="email" id="emailaddress" required placeholder="Enter your email">
+                                <div id="email-error" style="color: red; font-size: 0.875em; display: none;">
+                                  Please enter a valid email address.
+                                </div>
+                              </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input class="form-control" name="password" type="password" required="" id="password" placeholder="Enter your password">
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="checkbox-signin" checked>
+                                    <label class="form-check-label" for="checkbox-signin">Remember me</label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" id="captcha-question">What is 0 + 0?</label>
+                                <input class="form-control" type="text" id="captcha-answer" placeholder="Your answer" required>
+                                <div id="captcha-error" style="color: red; font-size: 0.875em; display: none;">
+                                  Wrong answer. Please try again.
+                                </div>
+                              </div>
+
+                            <div class="mb-3 d-grid text-center">
+                                <button class="btn btn-primary" type="submit"> Log In </button>
+                            </div>
+                        </form>
+
+                    </div> <!-- end card-body -->
+                </div>
+                <!-- end card -->
+
+                <div class="row mt-3">
+                    <div class="col-12 text-center">
+                        <p> <a href="pages-recoverpw.html" class="text-dark ms-1"><i class="fa fa-lock me-1"></i>Forgot your password?</a></p>
+                        <!-- <p class="text-dark">Don't have an account? <a href="pages-register.html" class="text-dark ms-1"><b>Sign Up</b></a></p> -->
+                    </div> <!-- end col -->
+                </div>
+                <!-- end row -->
+
+            </div> <!-- end col -->
+        </div>
+        <!-- end row -->
+    </div>
+    <!-- end container -->
+</div>
+
+<style>
+    /* Red border when input is invalid */
+    .invalid-input {
+      border-color: red !important;
+    }
+  </style>
+
+<script>
+    const emailInput = document.getElementById('emailaddress');
+    const errorDiv = document.getElementById('email-error');
+    const captchaQuestion = document.getElementById('captcha-question');
+  const captchaInput = document.getElementById('captcha-answer');
+  const captchaError = document.getElementById('captcha-error');
+  const form = document.getElementById('myForm');
+  
+  let num1, num2;
+
+  // Function to generate new captcha
+  function generateCaptcha() {
+    num1 = Math.floor(Math.random() * 10);
+    num2 = Math.floor(Math.random() * 10);
+    captchaQuestion.textContent = `What is ${num1} + ${num2}?`;
+  }
+
+  generateCaptcha();
+  
+    emailInput.addEventListener('input', function () {
+      const email = emailInput.value;
+  
+      // Simple email pattern (you can improve this)
+      const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  
+      // Show error only if input is not empty and invalid
+      if (email.length > 0 && !isValidEmail) {
+        emailInput.classList.add('invalid-input');
+        errorDiv.style.display = 'block';
+      } else {
+        emailInput.classList.remove('invalid-input');
+        errorDiv.style.display = 'none';
+      }
+    });
+
+  // Form submission
+  form.addEventListener('submit', function (e) {
+    const userAnswer = parseInt(captchaInput.value.trim());
+    const correctAnswer = num1 + num2;
+
+    // Validate captcha first
+    if (isNaN(userAnswer) || userAnswer !== correctAnswer) {
+      e.preventDefault(); // ❌ Prevent form submit
+      captchaError.style.display = 'block';
+      captchaInput.classList.add('invalid-input');
+      generateCaptcha(); // Optional: change question
+      captchaInput.value = ''; // Clear wrong answer
+      return; // stop further execution
+    } else {
+      captchaError.style.display = 'none';
+      captchaInput.classList.remove('invalid-input');
+    }
+
+    // You can add extra validations here if needed
+  });
+  </script>

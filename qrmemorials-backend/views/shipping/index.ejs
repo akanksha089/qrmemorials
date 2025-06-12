@@ -1,0 +1,73 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body table-responsive">
+                <div class="row page_top_bar">
+                    <div class="col-12">
+                        <div class="col-6 heading float-left">
+                            <h4 class="mt-0 header-title">
+                                <%= title %>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+
+
+                <table id="responsive-datatable" class="table table-bordered table-bordered dt-responsive nowrap">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Country</th>
+                            <th>Address</th>
+                            <th>City</th>
+                            <th>State</th>
+                            <th>Postal Code</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+
+
+                    <tbody>
+                        <% addresses.forEach(address=> { %>
+                            <tr>
+                                <td>
+                                    <%= address.id %>
+                                </td>
+                                </td>
+                                <td>
+                                    <%= address.first_name %>
+                                </td>
+                                <td>
+                                    <%= address.last_name %>
+                                </td>
+                                <td>
+                                    <%= address.country %>
+                                </td>
+                                <td>
+                                    <%= address.address %>
+                                </td>
+                                <td>
+                                    <%= address.city %>
+                                </td>
+                                <td>
+                                    <%= address.state %>
+                                </td>
+                                <td>
+                                    <%= address.postal_code %>
+                                </td>
+                                <td>
+                                    <%= address.created_at.toISOString().slice(0, 19).replace('T', ' ' ) %>
+                                </td>
+                            </tr>
+                            <% }) %>
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div> <!-- end row -->

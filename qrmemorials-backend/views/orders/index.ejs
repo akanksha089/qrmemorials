@@ -1,0 +1,99 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body table-responsive">
+                <div class="row page_top_bar">
+                    <div class="col-12">
+                        <div class="col-6 heading float-left">
+                            <h4 class="mt-0 header-title">
+                                <%= title %>
+                            </h4>
+                        </div>
+
+                    </div>
+                </div>
+
+                <table id="responsive-datatable" class="table table-bordered table-bordered dt-responsive nowrap">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Total</th>
+                            <!-- <th>Status</th> -->
+                            <th>Payment</th>
+                            <th>Shipping Address</th>
+                            <th>Billing Info</th>
+                            <th>Pacakge Info</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+                    <!-- <tbody>
+                        <% orders.forEach(order=> { %>
+                            <tr>
+                                <td colspan="100">
+                                    <pre><%= JSON.stringify(order, null, 2) %></pre>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody> -->
+
+                    <tbody>
+                        <% orders.forEach(order=> { %>
+                            <tr>
+                                <td>
+                                    <%= order.order_id %>
+                                </td>
+                                <td>$<%= order.total_amount %>
+                                </td>
+                                <!-- <td>
+                                    <%= order.order_status %>
+                                </td> -->
+                                <td>
+                                    <strong>
+                                        <%= order.payment_method %>
+                                    </strong> - <%= order.payment_status %><br />
+                                        Txn: <%= order.payment_transaction_id || 'N/A' %>
+                                </td>
+                                <td>
+                                    <%= order.shipping_first_name %>
+                                        <%= order.shipping_last_name %><br />
+                                            <%= order.shipping_address %>, <%= order.shipping_city %>, <%=
+                                                        order.shipping_state %><br />
+                                                        <%= order.shipping_country %> - <%= order.shipping_postal_code
+                                                                %>
+                                </td>
+                                <td>
+                                    <%= order.billing_first_name %>
+                                        <%= order.billing_last_name %><br />
+                                            <%= order.billing_email %><br />
+                                                <%= order.billing_address %>, <%= order.billing_city %>, <%=
+                                                            order.billing_state %><br />
+                                                            <%= order.billing_country %> - <%= order.billing_postal_code
+                                                                    %><br />
+                                                                    Phone: <%= order.billing_phone %>
+                                </td>
+                          <td>
+                                    <% if (order.products && order.products.length> 0) { %>
+                                        <% order.products.forEach(function(product) { %>
+                                            <strong>
+                                                <%= product.name %>
+                                            </strong><br />
+                                            Quantity: <%= product.quantity %><br />
+                                                Price: $<%= product.price %><br />
+                                                    <hr />
+                                                    <% }); %>
+                                                        <% } else { %>
+                                                            <em>No products found</em>
+                                                            <% } %>
+                                </td> 
+                                <td>
+                                    <%= order.order_created_at.toISOString().slice(0, 19).replace('T', ' ' ) %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div> <!-- end row -->

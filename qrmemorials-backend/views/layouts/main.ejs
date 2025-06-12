@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <meta charset="utf-8" />
+        <title>QR Memorials</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta
+            content="A fully featured admin theme which can be used to build CRM, CMS, etc."
+            name="description" />
+        <meta content="Coderthemes" name="author" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <!-- App favicon -->
+        <link rel="shortcut icon"
+            href="<%- process.env.BACKEND_URL %>/assets/images/favicon.ico">
+
+        <!-- App css -->
+
+        <link href="<%- process.env.BACKEND_URL %>/assets/css/app.min.css"
+            rel="stylesheet" type="text/css" id="app-style" />
+
+        <!-- icons -->
+        <link href="<%- process.env.BACKEND_URL %>/assets/css/icons.min.css"
+            rel="stylesheet" type="text/css" />
+
+        <link
+            href="<%- process.env.BACKEND_URL %>/assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css"
+            rel="stylesheet" type="text/css" />
+        <link
+            href="<%- process.env.BACKEND_URL %>/assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css"
+            rel="stylesheet" type="text/css" />
+        <link
+            href="<%- process.env.BACKEND_URL %>/assets/css/admin_development.css"
+            rel="stylesheet" type="text/css" />
+
+        <!-- body start -->
+        <body class="loading" data-layout-color="light"
+            data-layout-mode="default" data-layout-size="fluid"
+            data-topbar-color="light" data-leftbar-position="fixed"
+            data-leftbar-color="light" data-leftbar-size='default'
+            data-sidebar-user='true'>
+
+            <!-- Begin page -->
+            <div id="wrapper">
+
+                <!-- Topbar Start -->
+                <%- include('../elements/header.ejs') %>
+                <!-- end Topbar -->
+
+                <!-- ========== Left Sidebar Start ========== -->
+                <%- include('../elements/left_sidebar.ejs') %>
+                <!-- Left Sidebar End -->
+
+                <div class="content-page">
+                    <div class="content">
+
+                        <!-- Start Content-->
+                        <div class="container-fluid">
+                            <%- include('../elements/msg_response.ejs') %>
+                            <%- body %>
+
+                        </div>
+                    </div>
+                </div>
+
+                <%- include('../elements/footer.ejs') %>
+            </div>
+            <!-- END wrapper -->
+
+            <!-- Right Sidebar -->
+            <%- include('../elements/right_sidebar.ejs') %>
+            <!-- /Right-bar -->
+
+            <!-- Right bar overlay-->
+            <div class="rightbar-overlay"></div>
+
+            <!-- Vendor -->
+            <script
+                src="<%- process.env.BACKEND_URL %>/assets/libs/jquery/jquery.min.js"></script>
+            <script
+                src="<%- process.env.BACKEND_URL %>/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+            <script
+                src="<%- process.env.BACKEND_URL %>/assets/libs/simplebar/simplebar.min.js"></script>
+            <script
+                src="<%- process.env.BACKEND_URL %>/assets/libs/node-waves/waves.min.js"></script>
+            <script
+                src="<%- process.env.BACKEND_URL %>/assets/libs/waypoints/lib/jquery.waypoints.min.js"></script>
+            <script
+                src="<%- process.env.BACKEND_URL %>/assets/libs/jquery.counterup/jquery.counterup.min.js"></script>
+            <script
+                src="<%- process.env.BACKEND_URL %>/assets/libs/feather-icons/feather.min.js"></script>
+            <!-- knob plugin -->
+            <script
+                src="<%- process.env.BACKEND_URL %>/assets/libs/jquery-knob/jquery.knob.min.js"></script>
+            <!--Morris Chart-->
+            <script
+                src="<%- process.env.BACKEND_URL %>/assets/libs/morris.js06/morris.min.js"></script>
+            <script
+                src="<%- process.env.BACKEND_URL %>/assets/libs/raphael/raphael.min.js"></script>
+            <!-- Dashboar init js-->
+            <script
+                src="<%- process.env.BACKEND_URL %>/assets/js/pages/dashboard.init.js"></script>
+
+            <!-- App js-->
+            <script
+                src="<%- process.env.BACKEND_URL %>/assets/js/app.min.js"></script>
+
+            <!--- datatable jquery -->
+            <script
+                src="<%- process.env.BACKEND_URL %>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+            <script
+                src="<%- process.env.BACKEND_URL %>/assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+            <script
+                src="<%- process.env.BACKEND_URL %>/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+            <script
+                src="<%- process.env.BACKEND_URL %>/assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
+            <script
+                src="<%- process.env.BACKEND_URL %>/assets/js/pages/datatables.init.js"></script>
+
+            <!-- CKEDITOR -->
+            <script
+                src="<%- process.env.BACKEND_URL %>/assets/tinymce_editor/tinymce/js/tinymce/tinymce.min.js"></script>
+            <script>
+            // Initialize TinyMCE
+            tinymce.init({
+                selector: '#editor',
+                plugins: 'advlist autolink lists link image charmap preview anchor textcolor code table paste media fullscreen help',
+                toolbar: 'undo redo | formatselect | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | code | link image media | table | fullscreen help',
+                menubar: 'file edit view insert format tools table help',
+                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                image_title: true,
+                automatic_uploads: true,
+                file_picker_types: 'image media',
+                file_picker_callback: function (callback, value, meta) {
+                    // Provide file picker functionality for image and media
+                    if (meta.filetype === 'image') {
+                        // Open file picker dialog
+                        document.getElementById('file').click();
+                    } else if (meta.filetype === 'media') {
+                        // Handle media file
+                    }
+                },
+                setup: function (editor) {
+                    editor.on('change', function () {
+                        editor.save();
+                    });
+                }
+            });
+        </script>
+
+            <script type="text/javascript">
+            $(document).ready(function () {
+               /* $('body').on('click','#switch',function(){
+                    if ($(this).is(':checked')) {
+                       
+                    }
+                })*/
+                setTimeout(function(){ 
+                    $('.msg_response_box').hide();
+                 }, 2000);
+            })
+        </script>
+
+<script>
+    let questionCounter = 1;
+    const maxOptions = 4;
+    const apiUrl = '/admin/create-question'; // Replace with your API endpoint
+    const quizId = document.getElementById('quizId').value;
+
+    // Show modal to add a new question
+    document.getElementById('addQuestionBtn').addEventListener('click', function () {
+        document.getElementById('questionModal').style.display = 'block';
+    });
+
+    // Close the "Add Question" modal
+    document.getElementById('closeAddModal').addEventListener('click', function () {
+        document.getElementById('questionModal').style.display = 'none';
+        resetAddQuestionModal();
+    });
+
+    // Add question to the table and send to API
+    document.getElementById('addQuestionToList').addEventListener('click', async function () {
+        const questionText = document.getElementById('questionText').value;
+        const answerType = document.getElementById('answerType').value;
+        const options = getOptions(); // Get options including checkbox states
+
+        if (questionText && options.length > 0) {
+            const data = {
+                quizId: quizId,
+                questionText,
+                answerType,
+                answers: options
+            };
+
+            console.log(data); // Debugging line to check data structure
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+
+                    const questionItem = document.createElement('tr');
+                    questionItem.innerHTML = `
+                        <td>${questionCounter++}</td>
+                        <td>${questionText}</td>
+                        <td>${options.map((option, index) => `${String.fromCharCode(65 + index)}: ${option.text}`).join(', ')}</td>
+                        <td>
+                            <button class="btn btn-warning edit-btn">Edit</button>
+                            <button class="btn btn-danger delete-btn">Delete</button>
+                        </td>
+                    `;
+
+                    const questionsTable = document.getElementById('questionsTable').getElementsByTagName('tbody')[0];
+
+                    // Clear placeholder text if any
+                    if (questionsTable.children[0].children[0].textContent === 'Please add questions') {
+                        questionsTable.innerHTML = '';
+                    }
+
+                    questionsTable.appendChild(questionItem);
+
+                    // Clear input fields
+                    resetAddQuestionModal();
+
+                    // Hide the modal
+                    document.getElementById('questionModal').style.display = 'none';
+
+                    alert('Question added successfully!');
+                } else {
+                    const errorResponse = await response.json(); // Optional: check for error details
+                    console.error('Error:', errorResponse);
+                     throw new Error('Failed to save question: ' + errorResponse.message);
+                }
+            } catch (error) {
+                alert(error.message);
+            }
+        } else {
+            alert('Please enter the question and at least one option.');
+        }
+    });
+
+    // Close the "Edit Question" modal
+    document.getElementById('closeEditModal').addEventListener('click', function () {
+        document.getElementById('editQuestionModal').style.display = 'none';
+    });
+
+    // Add an input field for options with a checkbox
+    document.getElementById('addOptionBtn').addEventListener('click', function () {
+        const optionsContainer = document.getElementById('optionsContainer');
+        const currentOptionsCount = optionsContainer.children.length;
+
+        if (currentOptionsCount < maxOptions) {
+            const optionIndex = currentOptionsCount + 1;
+
+            const optionContainer = document.createElement('div');
+            optionContainer.className = 'option-container';
+
+            // Create the checkbox
+            const newCheckbox = document.createElement('input');
+            newCheckbox.type = 'checkbox';
+            newCheckbox.id = `checkbox-${optionIndex}`;
+            newCheckbox.className = 'option-checkbox';
+
+            // Create the text input field
+            const newOption = document.createElement('input');
+            newOption.type = 'text';
+            newOption.className = 'form-control option-input';
+            newOption.placeholder = `Option-${optionIndex}`;
+            newOption.id = `option-${optionIndex}`;
+
+            // Create the delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn btn-danger delete-option-btn';
+            deleteBtn.textContent = 'Remove';
+            deleteBtn.addEventListener('click', function () {
+                optionContainer.remove();
+                updateOptionButtons();
+            });
+
+            // Append the checkbox, input field, and delete button to the option container
+            optionContainer.appendChild(newCheckbox);
+            optionContainer.appendChild(newOption);
+            optionContainer.appendChild(deleteBtn);
+            optionsContainer.appendChild(optionContainer);
+
+            // Disable the button if the limit is reached
+            if (currentOptionsCount + 1 === maxOptions) {
+                document.getElementById('addOptionBtn').disabled = true;
+            }
+        }
+    });
+
+    // Update the "Add Option" button state
+    function updateOptionButtons() {
+        const optionsContainer = document.getElementById('optionsContainer');
+        const currentOptionsCount = optionsContainer.children.length;
+
+        if (currentOptionsCount < maxOptions) {
+            document.getElementById('addOptionBtn').disabled = false;
+        }
+    }
+
+    // Helper function to get options
+    function getOptions(isEdit = false) {
+        const optionsContainer = document.getElementById(isEdit ? 'editOptionsContainer' : 'optionsContainer');
+        return Array.from(optionsContainer.querySelectorAll('div.option-container')).map((optionContainer, index) => {
+            const input = optionContainer.querySelector('input[type="text"]');
+            const checkbox = optionContainer.querySelector('input[type="checkbox"]');
+            return {
+                text: input.value,
+                isCorrect: checkbox ? checkbox.checked : false // Set isCorrect based on checkbox state
+            };
+        }).filter(option => option.text.trim() !== ''); // Filter out empty options
+    }
+
+    // Reset the "Add Question" modal
+    function resetAddQuestionModal() {
+        document.getElementById('questionText').value = '';
+        const optionsContainer = document.getElementById('optionsContainer');
+        optionsContainer.innerHTML = '';
+        document.getElementById('addOptionBtn').disabled = false;
+    }
+</script>
+
+        </body>
+    </html>
