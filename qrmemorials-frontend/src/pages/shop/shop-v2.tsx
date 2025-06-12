@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import bg from '../../assets/img/shortcode/breadcumb.jpg'
 import cardImg from '../../assets/img/thumb/shop-card.jpg'
 
-import { productList } from '../../data/data'
+// import { productList } from '../../data/data'
 
 import SelectOne from '../../components/product/select-one'
 // import NavbarOne from '../../components/navbar/navbar-one'

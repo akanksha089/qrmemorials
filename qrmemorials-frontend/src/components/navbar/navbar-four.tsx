@@ -6,7 +6,8 @@ import { Link } from 'react-router-dom'
 import add from '../../assets//img/thumb/add.png'
 
 export default function NavbarFour() {
-    const [toggle , setToggle] = useState<boolean>(false)
+    // const [toggle , setToggle] = useState<boolean>(false)
+    const toggle  = useState<boolean>(false)
     const [current , setCurrent] = useState<string>('')
     const [scroll,setScroll] = useState<boolean>(false)
     

@@ -10,7 +10,8 @@ import SelectTwo from "../../components/product/select-two";
 
 import bg from '../../assets/img/shortcode/breadcumb.jpg'
 
-import { productList, productSlider } from "../../data/data";
+// import { productList, productSlider } from "../../data/data";
+import { productSlider } from "../../data/data";
 
 import OwlCarousel from "react-owl-carousel";
 
