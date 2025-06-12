@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useContext } from "react";
 
-import NavbarOne from "../../components/navbar/navbar-one.jsx";
+import NavbarOne from "../../components/navbar/nav-menu";
 import FooterOne from "../../components/footer/footer-one";
 import ScrollToTop from "../../components/scroll-to-top";
 import AccountTab from "../../components/account/account-tab";

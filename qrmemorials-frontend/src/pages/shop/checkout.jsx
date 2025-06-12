@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import NavbarOne from "../../components/navbar/navbar-one.jsx";
+import NavbarOne from "../../components/navbar/nav-menu";
 
 import bg from '../../assets/img/shortcode/breadcumb.jpg'
 import cart1 from '../../assets/img/gallery/cart/cart-01.jpg'
