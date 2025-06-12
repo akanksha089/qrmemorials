@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import bg from '../../assets/img/shortcode/breadcumb.jpg'
 import error from '../../assets/img/thumb/error.png'
 
-import NavbarOne from "../../components/navbar/navbar-one";
+// import NavbarOne from "../../components/navbar/navbar-one";
 import FooterOne from "../../components/footer/footer-one";
 import ScrollToTop from "../../components/scroll-to-top";
 import { useEffect } from "react";
@@ -15,7 +15,7 @@ export default function Error() {
     })
   return (
     <>
-        <NavbarOne/>
+        {/* <NavbarOne/> */}
 
         <div className="flex items-center gap-4 flex-wrap bg-overlay p-14 sm:p-16 before:bg-title before:bg-opacity-70" style={{backgroundImage:`url(${bg})`}}>
             <div className="text-center w-full">

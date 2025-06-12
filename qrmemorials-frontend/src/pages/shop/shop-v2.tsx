@@ -8,8 +8,8 @@ import cardImg from '../../assets/img/thumb/shop-card.jpg'
 import { productList } from '../../data/data'
 
 import SelectOne from '../../components/product/select-one'
-import NavbarOne from '../../components/navbar/navbar-one'
-import LayoutOne from '../../components/product/layout-one'
+// import NavbarOne from '../../components/navbar/navbar-one'
+// import LayoutOne from '../../components/product/layout-one'
 import FooterOne from '../../components/footer/footer-one'
 import ScrollToTop from '../../components/scroll-to-top'
 
@@ -28,7 +28,7 @@ export default function ShopV2() {
 
   return (
     <>
-        <NavbarOne/>
+        {/* <NavbarOne/> */}
         
         <div className="flex items-center gap-4 flex-wrap bg-overlay p-14 sm:p-16 before:bg-title before:bg-opacity-70" style={{backgroundImage:`url(${bg})`}}>
             <div className="text-center w-full">
@@ -178,11 +178,11 @@ export default function ShopV2() {
                     </div>
                     <div className="lg:max-w-[1100px] w-full" data-aos="fade-up" data-aos-delay="300">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-8">
-                            {productList.map((item,index)=>{
+                            {/* {productList.map((item,index)=>{
                                 return(
                                     <LayoutOne item={item} key={index} />
                                 )
-                            })}
+                            })} */}
                         </div>
                         <div className="mt-10 md:mt-12 flex items-center justify-center gap-[10px]">
                             <Link to="#" className="text-title dark:text-white text-xl"><span className="lnr lnr-arrow-left"></span></Link>         

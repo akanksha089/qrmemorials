@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import bg from '../../assets/img/bg/register.jpg'
 
-import NavbarOne from "../../components/navbar/navbar-one";
+// import NavbarOne from "../../components/navbar/navbar-one";
 import FooterOne from "../../components/footer/footer-one";
 import ScrollToTop from "../../components/scroll-to-top";
 
@@ -16,7 +16,7 @@ export default function Register() {
 
   return (
     <>
-        <NavbarOne/>
+        {/* <NavbarOne/> */}
 
         <div className="flex">
             <div className="w-1/2 hidden md:block lg:flex-1" >

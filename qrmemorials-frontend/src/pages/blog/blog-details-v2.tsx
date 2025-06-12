@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 
-import NavbarOne from "../../components/navbar/navbar-one";
+// import NavbarOne from "../../components/navbar/navbar-one";
 import BlogOne from "../../components/blog/blog-one";
 import FooterOne from "../../components/footer/footer-one";
 import ScrollToTop from "../../components/scroll-to-top";
@@ -27,7 +27,7 @@ export default function BlogDetailsV2() {
     const data = blogOneData.find((item)=> item.id === parseInt(id))
   return (
     <>
-        <NavbarOne/>
+        {/* <NavbarOne/> */}
 
         <div className="mt-14">
             <div className="container-fluid">

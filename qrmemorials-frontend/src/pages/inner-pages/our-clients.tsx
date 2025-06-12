@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import NavbarOne from "../../components/navbar/navbar-one";
+// import NavbarOne from "../../components/navbar/navbar-one";
 import bg from '../../assets/img/shortcode/breadcumb.jpg'
 import FooterOne from "../../components/footer/footer-one";
 import ScrollToTop from "../../components/scroll-to-top";
@@ -16,8 +16,8 @@ export default function OurClients() {
 
   return (
     <>
-        <NavbarOne/>
-
+        {/* <NavbarOne/> */}
+{/*  */}
         <div className="flex items-center gap-4 flex-wrap mt-5 md:mt-7 bg-overlay p-14 sm:p-16 before:bg-title before:bg-opacity-70" style={{backgroundImage:`url(${bg})`}}>
             <div className="text-center w-full">
                 <h2 className="text-white text-8 md:text-[40px] font-normal leading-none text-center">Our Clients</h2>

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 
-import NavbarOne from '../../components/navbar/navbar-one'
+// import NavbarOne from '../../components/navbar/navbar-one'
 import SelectOne from '../../components/product/select-one'
 import FooterOne from '../../components/footer/footer-one'
 import ScrollToTop from '../../components/scroll-to-top'

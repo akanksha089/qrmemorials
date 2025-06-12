@@ -1,4 +1,4 @@
-import NavbarOne from "../../components/navbar/navbar-one";
+// import NavbarOne from "../../components/navbar/navbar-one";
 import bg from '../../assets/img/shortcode/breadcumb.jpg'
 import { Link } from "react-router-dom";
 import about from '../../assets/img/svg/about.svg'
@@ -21,7 +21,7 @@ export default function Pricing() {
     })
   return (
     <>
-        <NavbarOne/>
+        {/* <NavbarOne/> */}
 
         <div className="flex items-center gap-4 flex-wrap bg-overlay p-14 sm:p-16 before:bg-title before:bg-opacity-70" style={{backgroundImage:`url(${bg})`}}>
             <div className="text-center w-full">

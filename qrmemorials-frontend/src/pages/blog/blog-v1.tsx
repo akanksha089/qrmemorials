@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import NavbarOne from "../../components/navbar/navbar-one";
+// import NavbarOne from "../../components/navbar/navbar-one";
 import Aos from "aos";
 import bg from '../../assets/img/shortcode/breadcumb.jpg'
 import BlogTwo from "../../components/blog/blog-two";
@@ -17,7 +17,7 @@ export default function BlogV1() {
 
   return (
     <>
-        <NavbarOne/>
+        {/* <NavbarOne/> */}
 
         <div className="flex items-center gap-4 flex-wrap bg-overlay p-14 sm:p-16 before:bg-title before:bg-opacity-70" style={{backgroundImage:`url(${bg})`}}>
             <div className="text-center w-full">

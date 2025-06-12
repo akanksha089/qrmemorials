@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import NavbarOne from "../../components/navbar/navbar-one";
+// import NavbarOne from "../../components/navbar/navbar-one";
 import SliderThree from "../../components/banner-slider/slider-three";
 import BlogFive from "../../components/blog/blog-five";
 import NewsOne from "../../components/news-letter/news-one";
@@ -32,7 +32,7 @@ export default function IndexFive() {
 
   return (
     <>
-      <NavbarOne/> 
+      {/* <NavbarOne/>  */}
 
       <div className="bg-primary-light dark:bg-dark-secondary relative overflow-hidden">
         <div className={`absolute min-h-full left-0 top-0 w-[300px] xl:w-96 h-full bg-[#DBCBBD] dark:bg-primary home-v5-ctagory pt-[30px] xl:pt-16 xl:pl-24 2xl:pb-7 z-10 transform translate-x-[-300px] xl:translate-x-0 duration-300  ${open ? 'active' : ''}`}>

@@ -2,7 +2,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { useEffect } from 'react'
 
-import NavbarOne from '../../components/navbar/navbar-one'
+// import NavbarOne from '../../components/navbar/navbar-one'
 import FooterOne from '../../components/footer/footer-one'
 import ScrollToTop from '../../components/scroll-to-top'
 import BlogOne from '../../components/blog/blog-one'
@@ -28,7 +28,7 @@ export default function BlogDetailsV1() {
 
   return (
     <>
-    <NavbarOne/>
+    {/* <NavbarOne/> */}
 
     <div className="mt-14">
         <div className="container">

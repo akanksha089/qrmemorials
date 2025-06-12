@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
-import NavbarOne from "../../components/navbar/navbar-one";
-import LayoutOne from "../../components/product/layout-one";
+// import NavbarOne from "../../components/navbar/navbar-one";
+// import LayoutOne from "../../components/product/layout-one";
 import FooterOne from "../../components/footer/footer-one";
 import ScrollToTop from "../../components/scroll-to-top";
 import SelectOne from "../../components/product/select-one";
@@ -49,7 +49,7 @@ export default function ShopV3() {
 
   return (
     <>
-        <NavbarOne/>
+        {/* <NavbarOne/> */}
 
         <div className="flex items-center gap-4 flex-wrap bg-overlay p-14 sm:p-16 before:bg-title before:bg-opacity-70" style={{backgroundImage:`url(${bg})`}}>
             <div className="text-center w-full">
@@ -141,11 +141,11 @@ export default function ShopV3() {
                 </div>
                 <div className="max-w-[1720px] mx-auto mt-8 md:mt-12" data-aos="fade-up" data-aos-delay="300">
                     <div className="grid sm:grid-cols-2  lg:grid-cols-3 xl:grid-cols-5 gap-5 lg:gap-[30px]">
-                        {productList.slice(0,10).map((item,index)=>{
+                        {/* {productList.slice(0,10).map((item,index)=>{
                             return(
                                 <LayoutOne item={item} key={index}/>
                             )
-                        })}
+                        })} */}
                     </div>
                 </div>
                 <div className="text-center mt-7 md:mt-12" data-aos="fade-up">

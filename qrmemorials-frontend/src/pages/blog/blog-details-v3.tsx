@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import NavbarOne from "../../components/navbar/navbar-one";
+// import NavbarOne from "../../components/navbar/navbar-one";
 import Aos from "aos";
 import { Link } from "react-router-dom";
 import user from '../../assets/img/testimonial/tmnl-02.jpg'
@@ -17,7 +17,7 @@ export default function BlogDetailsV3() {
     })
   return (
     <>
-        <NavbarOne/>   
+        {/* <NavbarOne/>    */}
 
         <div className="s-pt-100" data-aos="fade-up">
             <div className="container">

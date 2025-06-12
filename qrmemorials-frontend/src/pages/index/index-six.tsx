@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
 
-import NavbarOne from "../../components/navbar/navbar-one";
+// import NavbarOne from "../../components/navbar/navbar-one";
 import PartnerOne from "../../components/partner-one";
 import FooterSix from "../../components/footer/footer-six";
 import ScrollToTop from "../../components/scroll-to-top";
@@ -29,7 +29,7 @@ export default function IndexSix() {
     })
   return (
     <div className="dark:bg-title bg-[#EBEBEB]">
-        <NavbarOne/>   
+        {/* <NavbarOne/>    */}
 
         <div className="hv6-banner bg-overlay py-20 sm:py-24 md:py-32 2xl:py-[245px] bg-[#EBEBEB] dark:bg-title dark:before:bg-dark-secondary dark:before:bg-opacity-50 2xl:dark:before:hidden">
             <div className="container">

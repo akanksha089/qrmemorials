@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
-import NavbarOne from '../../components/navbar/navbar-one'
+// import NavbarOne from '../../components/navbar/navbar-one'
 import FooterOne from '../../components/footer/footer-one'
 import ScrollToTop from '../../components/scroll-to-top'
 
@@ -15,7 +15,7 @@ export default function ForgerPassword() {
     })
   return (
     <>
-        <NavbarOne/>
+        {/* <NavbarOne/> */}
 
         <div className="flex">
             <div className="w-1/2 hidden md:block lg:flex-1">

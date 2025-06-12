@@ -11,7 +11,7 @@ import payment04 from '../../assets/img/Payment/payment-04-2.png'
 import payment5 from '../../assets/img/Payment/payment-05.png'
 import payment6 from '../../assets/img/Payment/payment-06.png'
 
-import NavbarOne from "../../components/navbar/navbar-one";
+// import NavbarOne from "../../components/navbar/navbar-one";
 import FooterOne from "../../components/footer/footer-one";
 import ScrollToTop from "../../components/scroll-to-top";
 
@@ -25,7 +25,7 @@ export default function PaymentMethod() {
 
   return (
     <>
-        <NavbarOne/>
+        {/* <NavbarOne/> */}
         <div className="flex items-center gap-4 flex-wrap bg-overlay p-14 sm:p-16 before:bg-title before:bg-opacity-70" style={{backgroundImage:`url(${bg})`}}>
             <div className="text-center w-full">
                 <h2 className="text-white text-8 md:text-[40px] font-normal leading-none text-center">Payment Method</h2>

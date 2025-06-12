@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import logo from '../../assets/img/svg/logo.svg'
 import logoLight from '../../assets/img/svg/logo-light.svg'
 import { Link } from 'react-router-dom'
-import NavMenu from './nav-menu'
+// import NavMenu from './nav-menu'
 import add from '../../assets//img/thumb/add.png'
 
 export default function NavbarThree() {
@@ -129,7 +129,7 @@ export default function NavbarThree() {
                         </ul>
                     </div>
 
-                    <NavMenu toggle={toggle} setToggle={setToggle}/>
+                    {/* <NavMenu toggle={toggle} setToggle={setToggle}/> */}
                 </div>
             </div>
         </div>
