@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 import bg from '../../assets/img/thank-you.png'
 
-import NavbarOne from "../../components/navbar/nav-menu.jsx";
+import NavbarOne from "../../components/navbar/navbar-one";
 import FooterOne from "../../components/footer/footer-one";
 import ScrollToTop from "../../components/scroll-to-top";
 

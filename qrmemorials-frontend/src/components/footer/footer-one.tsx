@@ -92,7 +92,7 @@ export default function FooterOne() {
                     </div>
 
                     <div className="max-w-[1722px] mx-auto border-t border-white border-opacity-10 py-5 md:py-7 text-center">
-                        <p className="text-white-light inline-flex align-middle">© {new Date().getFullYear()} Furnixar Develop with <FaHeart className="fa-solid fa-heart mx-1 text-red-500"></FaHeart>  By <Link to="https://shreethemes.in/" target="_blank" className='ms-1'>Shreethemes</Link></p>
+                        <p className="text-white-light inline-flex align-middle">© {new Date().getFullYear()} SoulLink <FaHeart className="fa-solid fa-heart mx-1 text-red-500"></FaHeart>   <Link to="https://shreethemes.in/" target="_blank" className='ms-1'></Link></p>
                     </div>
                 </div>
             </div>
