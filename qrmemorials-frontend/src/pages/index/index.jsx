@@ -1,7 +1,7 @@
 import { useEffect,useRef } from 'react';
 import { Link } from 'react-router-dom';
 
-import NavbarOne from '../../components/navbar/nav-menu'
+import NavbarOne from '../../components/navbar/navbar-one'
 import SliderOne from '../../components/banner-slider/slider-one';
 import LayoutOne from '../../components/product/layout-one';
 import FooterOne from '../../components/footer/footer-one';
@@ -48,7 +48,7 @@ function Index() {
 
   return (
     <>
- <NavbarOne/>
+        <NavbarOne/>
         <SliderOne/>
 
         <div className="s-py-100-50 overflow-hidden">
