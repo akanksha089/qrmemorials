@@ -6,6 +6,11 @@ export const saveUserData = (user) => {
 };
 
 export const getUserData = () => {
-  const data = localStorage.getItem('userData');
-  return data ? JSON.parse(data) : null;
+  try {
+    const data = localStorage.getItem('userData');
+    return data ? JSON.parse(data) : {};
+  } catch (e) {
+    console.error("Error parsing userData:", e);
+    return {};
+  }
 };
