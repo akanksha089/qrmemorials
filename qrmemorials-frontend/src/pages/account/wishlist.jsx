@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
 import { useEffect, useContext } from "react";
 
-import NavbarOne from "../../components/navbar/nav-menu";
+import NavbarOne from "../../components/navbar/nav-menu.jsx";
 import FooterOne from "../../components/footer/footer-one";
 import ScrollToTop from "../../components/scroll-to-top";
 import AccountTab from "../../components/account/account-tab";
 
 import bg from '../../assets/img/shortcode/breadcumb.jpg'
-import { productList } from "../../data/data";
+// import { productList } from "../../data/data";
 
 import { RiShoppingBag2Line } from "react-icons/ri";
 import { FaHeart } from "react-icons/fa";
