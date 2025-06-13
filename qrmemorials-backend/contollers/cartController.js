@@ -2,7 +2,7 @@ const db = require("../config/mysql_database");
 
 // Add item to cart
 exports.addToCart = async (req, res) => {
-  const user_id = req.user.id;  // from auth middleware
+  const user_id = req.user.id;  
   const { package_id, quantity } = req.body;
 
   if (!package_id || !quantity) {
