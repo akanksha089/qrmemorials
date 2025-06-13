@@ -14,7 +14,7 @@ const upload = multer();
 // CORS setup
 app.use(
   cors({
- origin: "https://memorials-one.vercel.app/", // Adjust your frontend URL
+ origin: "https://memorials-one.vercel.app", // Adjust your frontend URL
 //  origin: "http://localhost:5173", // Adjust your frontend URL
     credentials: true,
   })
