@@ -25,94 +25,7 @@ exports.addFrom = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-// CREATE RECORD
-// exports.createRecord = catchAsyncErrors(async (req, res, next) => {
-//   try {
-//     // ✅ 1. Parse and reconstruct 'features' from form fields BEFORE validation
-//     const featureMap = {};
 
-//     for (const key in req.body) {
-//       const match = key.match(/^features\[(\d+)\]\[(title|description)\]$/);
-//       if (match) {
-//         const index = parseInt(match[1]);
-//         const field = match[2];
-
-//         if (!featureMap[index]) {
-//           featureMap[index] = {};
-//         }
-
-//         featureMap[index][field] = req.body[key];
-//       }
-//     }
-
-//     const featuresArray = Object.values(featureMap).filter(
-//       f => f.title && f.description
-//     );
-
-//     if (featuresArray.length === 0) {
-//       throw new Error("At least one valid feature with title and description is required.");
-//     }
-
-//     // ✅ Inject parsed array into req.body for Joi validation
-//     req.body.features = featuresArray;
-
-//     // ✅ 2. Joi validation
-//     await Model.insertSchema.validateAsync(req.body, {
-//       abortEarly: false,
-//       allowUnknown: true,
-//     });
-
-//     // ✅ 3. Prepare data for DB
-//     const now = new Date();
-//     const data = {
-//       title: req.body.title,
-//       price: req.body.price,
-//       features: JSON.stringify(featuresArray),
-//       created_at: now,
-//       updated_at: now,
-//     };
-
-//     const insertResult = await QueryModel.saveData(table_name, data);
-//     const insertId = insertResult.insertId || insertResult.id;
-
-//     // ✅ 4. Respond
-//     const wantsJson = req.xhr || req.headers.accept?.includes("application/json");
-
-//     const responseData = {
-//       success: true,
-//       message: "Package created successfully",
-//       record: {
-//         id: insertId,
-//         ...data,
-//         features: featuresArray,
-//       },
-//     };
-
-//     if (wantsJson) {
-//       return res.status(201).json(responseData);
-//     } else {
-//       req.flash("msg_response", {
-//         status: 200,
-//         message: "Package created successfully",
-//       });
-//       return res.redirect(`/${process.env.ADMIN_PREFIX}/${module_slug}`);
-//     }
-//   } catch (error) {
-//     console.error("❌ Error in createRecord:", error);
-
-//     const errMsg = error.details
-//       ? error.details.map((d) => d.message)
-//       : error.message;
-
-//     const wantsJson = req.xhr || req.headers.accept?.includes("application/json");
-//     if (wantsJson) {
-//       return res.status(400).json({ success: false, error: errMsg });
-//     } else {
-//       req.flash("msg_response", { status: 400, message: errMsg });
-//       return res.redirect(`/${process.env.ADMIN_PREFIX}/${module_slug}/add`);
-//     }
-//   }
-// });
 exports.createRecord = catchAsyncErrors(async (req, res, next) => {
   try {
     // Debug logging
@@ -420,6 +333,36 @@ record.image_url= record.image ?  `${req.protocol}://${req.get('host')}/uploads/
     data:record,
   });
 });
+
+// Controller: getPurchasedPackagesForUser
+exports.getPurchasedPackagesForUser = catchAsyncErrors(async (req, res, next) => {
+  const userId = req.user.id;
+
+  const [records] = await db.query(`
+    SELECT 
+      p.*, 
+      oi.quantity,
+      o.id AS order_id,
+      o.created_at AS order_date
+    FROM orders o
+    JOIN order_items oi ON o.id = oi.order_id
+    JOIN packages p ON p.id = oi.product_id
+    WHERE o.user_id = ?
+    ORDER BY o.created_at DESC
+  `, [userId]);
+
+  const packages = records.map(pkg => ({
+    ...pkg,
+    features: JSON.parse(pkg.features || '[]'),
+    image_url: pkg.image ? `${req.protocol}://${req.get("host")}/uploads/packages/${pkg.image}` : null
+  }));
+
+  res.status(200).json({
+    success: true,
+    packages
+  });
+});
+
 
 function truncateText(text, maxLength) {
   if (text.length <= maxLength) return text;

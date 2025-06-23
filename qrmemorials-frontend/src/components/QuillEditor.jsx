@@ -1,0 +1,82 @@
+// QuillEditor.jsx
+import React, { useEffect, useRef, useState } from 'react';
+import 'quill/dist/quill.snow.css';
+import 'katex/dist/katex.min.css';
+import 'highlight.js/styles/atom-one-dark.css';
+
+import katex from 'katex';
+
+window.katex = katex;
+
+let Quill = null;
+
+const loadHighlightJS = async () => {
+  if (!window.hljs) {
+    await new Promise(resolve => {
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js';
+      script.onload = resolve;
+      document.body.appendChild(script);
+    });
+  }
+};
+
+const loadQuill = async () => {
+  if (!Quill) {
+    Quill = (await import('quill')).default;
+  }
+  return Quill;
+};
+
+const QuillEditor = () => {
+  const editorRef = useRef(null);
+  const [quillInstance, setQuillInstance] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      await loadHighlightJS();
+      await loadQuill();
+
+      if (!editorRef.current) return;
+
+      const toolbarOptions = [
+        [{ font: [] }, { size: [] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ color: [] }, { background: [] }],
+        [{ script: 'sub' }, { script: 'super' }],
+        [{ header: 1 }, { header: 2 }, 'blockquote', 'code-block'],
+        [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
+        [{ direction: 'rtl' }, { align: [] }],
+        ['link', 'image', 'video', 'formula'],
+        ['clean'],
+      ];
+
+      const quill = new Quill(editorRef.current, {
+        theme: 'snow',
+        modules: {
+          syntax: true, // Now hljs is definitely available on window
+          toolbar: toolbarOptions,
+          formula: true,
+        },
+      });
+
+      setQuillInstance(quill);
+    })();
+  }, []);
+
+  return (
+    <div id="standalone-container">
+      <div
+        id="editor"
+        ref={editorRef}
+        style={{
+          height: '220px',
+          backgroundColor: 'white',
+          color: 'black',
+        }}
+      />
+    </div>
+  );
+};
+
+export default QuillEditor;

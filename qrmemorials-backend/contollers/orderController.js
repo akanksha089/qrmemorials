@@ -193,8 +193,274 @@ exports.getAllOrders = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
+// exports.getAllOrdersAPI = catchAsyncErrors(async (req, res, next) => {
+//   try {
+//     // 1. Get orders with shipping, billing, payment details
+//     const [orders] = await db.query(`
+//       SELECT 
+//         o.id AS order_id,
+//         o.total_amount,
+//         o.payment_status,
+//         o.order_status,
+//         o.created_at AS order_created_at,
+
+//         s.first_name AS shipping_first_name,
+//         s.last_name AS shipping_last_name,
+//         s.country AS shipping_country,
+//         s.address AS shipping_address,
+//         s.city AS shipping_city,
+//         s.state AS shipping_state,
+//         s.postal_code AS shipping_postal_code,
+
+//         b.first_name AS billing_first_name,
+//         b.last_name AS billing_last_name,
+//         b.email AS billing_email,
+//         b.phone AS billing_phone,
+//         b.country AS billing_country,
+//         b.address AS billing_address,
+//         b.city AS billing_city,
+//         b.state AS billing_state,
+//         b.postal_code AS billing_postal_code,
+
+//         p.method AS payment_method,
+//         p.amount AS payment_amount,
+//         p.status AS payment_status,
+//         p.transaction_id AS payment_transaction_id
+
+//       FROM orders o
+//       LEFT JOIN shipping_addresses s ON o.id = s.order_id
+//       LEFT JOIN billing_addresses b ON o.id = b.order_id
+//       LEFT JOIN payments p ON o.id = p.order_id
+//       ORDER BY o.id DESC
+//     `);
+
+//     // 2. Get order items with package (product) details
+//     const [items] = await db.query(`
+//       SELECT 
+//         oi.order_id,
+//         oi.product_id,
+//         oi.quantity,
+//         oi.price,
+//         pkg.title AS name,
+//         pkg.features,
+//         pkg.image
+//       FROM order_items oi
+//       LEFT JOIN packages pkg ON oi.product_id = pkg.id
+//     `);
+
+//     // 3. Attach items to corresponding orders
+//     const ordersWithItems = orders.map(order => {
+//       const products = items
+//         .filter(item => item.order_id === order.order_id)
+//         .map(product => ({
+//           product_id: product.product_id,
+//           quantity: product.quantity,
+//           price: product.price,
+//           name: product.name,
+//           features: JSON.parse(product.features || "[]"),
+//           image: product.image?`${req.protocol}://${req.get('host')}/uploads/packages/${product.image}`
+//             :  null
+//         }));
+//       return { ...order, products };
+//     });
+
+//     // 4. Return JSON for React frontend
+//     res.status(200).json({
+//       success: true,
+//       orders: ordersWithItems
+//     });
+
+//   } catch (err) {
+//     console.error("Error fetching orders:", err);
+//     return next(new ErrorHandler("Unable to fetch orders", 500));
+//   }
+// });
+
+exports.getAllOrdersAPI = catchAsyncErrors(async (req, res, next) => {
+  try {
+    // 1. Get orders with billing, shipping, and payment details
+    const [orders] = await db.query(`
+      SELECT 
+        o.id AS order_id,
+        o.total_amount,
+        o.payment_status,
+        o.order_status,
+        o.created_at AS order_created_at,
+
+        s.first_name AS shipping_first_name,
+        s.last_name AS shipping_last_name,
+        s.country AS shipping_country,
+        s.address AS shipping_address,
+        s.city AS shipping_city,
+        s.state AS shipping_state,
+        s.postal_code AS shipping_postal_code,
+
+        b.first_name AS billing_first_name,
+        b.last_name AS billing_last_name,
+        b.email AS billing_email,
+        b.phone AS billing_phone,
+        b.country AS billing_country,
+        b.address AS billing_address,
+        b.city AS billing_city,
+        b.state AS billing_state,
+        b.postal_code AS billing_postal_code,
+
+        p.method AS payment_method,
+        p.amount AS payment_amount,
+        p.status AS payment_status,
+        p.transaction_id AS payment_transaction_id
+
+      FROM orders o
+      LEFT JOIN shipping_addresses s ON o.id = s.order_id
+      LEFT JOIN billing_addresses b ON o.id = b.order_id
+      LEFT JOIN payments p ON o.id = p.order_id
+      ORDER BY o.id DESC
+    `);
+
+    // 2. Get order items with package details
+    const [items] = await db.query(`
+      SELECT 
+        oi.order_id,
+        oi.product_id,
+        oi.quantity,
+        oi.price,
+        pkg.title AS name,
+        pkg.features,
+        pkg.image
+      FROM order_items oi
+      LEFT JOIN packages pkg ON oi.product_id = pkg.id
+    `);
+
+    // 3. Process and group products with features and image handling
+    const ordersWithItems = orders.map(order => {
+      const products = items
+        .filter(item => item.order_id === order.order_id)
+        .map(product => {
+          let parsedFeatures = [];
+          try {
+            parsedFeatures = product.features ? JSON.parse(product.features) : [];
+            if (!Array.isArray(parsedFeatures)) parsedFeatures = [];
+          } catch (e) {
+            parsedFeatures = [];
+          }
+
+          return {
+            product_id: product.product_id,
+            quantity: product.quantity,
+            price: product.price,
+            name: product.name || "Unknown Product",
+            features: parsedFeatures,
+            image: product.image
+              ? `${req.protocol}://${req.get("host")}/uploads/packages/${product.image}`
+              : null
+          };
+        });
+
+      return {
+        ...order,
+        products
+      };
+    });
+
+    // 4. Return API response
+    res.status(200).json({
+      success: true,
+      orders: ordersWithItems
+    });
+
+  } catch (err) {
+    console.error("Error fetching orders:", err);
+    return next(new ErrorHandler("Unable to fetch orders", 500));
+  }
+});
 
 
+
+exports.getOrderById = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const orderId = req.params.id;
+
+    // 1. Get single order info
+    const [orders] = await db.query(`
+      SELECT 
+        o.id AS order_id,
+        o.total_amount,
+        o.payment_status,
+        o.order_status,
+        o.created_at AS order_created_at,
+
+        s.first_name AS shipping_first_name,
+        s.last_name AS shipping_last_name,
+        s.country AS shipping_country,
+        s.address AS shipping_address,
+        s.city AS shipping_city,
+        s.state AS shipping_state,
+        s.postal_code AS shipping_postal_code,
+
+        b.first_name AS billing_first_name,
+        b.last_name AS billing_last_name,
+        b.email AS billing_email,
+        b.phone AS billing_phone,
+        b.country AS billing_country,
+        b.address AS billing_address,
+        b.city AS billing_city,
+        b.state AS billing_state,
+        b.postal_code AS billing_postal_code,
+
+        p.method AS payment_method,
+        p.amount AS payment_amount,
+        p.status AS payment_status,
+        p.transaction_id AS payment_transaction_id
+
+      FROM orders o
+      LEFT JOIN shipping_addresses s ON o.id = s.order_id
+      LEFT JOIN billing_addresses b ON o.id = b.order_id
+      LEFT JOIN payments p ON o.id = p.order_id
+      WHERE o.id = ?
+    `, [orderId]);
+
+    if (!orders.length) {
+      return next(new ErrorHandler("Order not found", 404));
+    }
+
+    const order = orders[0];
+
+    // 2. Get product items
+    const [items] = await db.query(`
+      SELECT 
+        oi.order_id,
+        oi.product_id,
+        oi.quantity,
+        oi.price,
+        pkg.title AS name,
+        pkg.features,
+        pkg.image
+      FROM order_items oi
+      LEFT JOIN packages pkg ON oi.product_id = pkg.id
+      WHERE oi.order_id = ?
+    `, [orderId]);
+
+    // 3. Attach items
+    order.products = items.map(product => ({
+      product_id: product.product_id,
+      quantity: product.quantity,
+      price: product.price,
+      name: product.name,
+      features: JSON.parse(product.features || "[]"),
+      image: product.image?`${req.protocol}://${req.get('host')}/uploads/packages/${product.image}`
+            :  null
+    }));
+
+    res.status(200).json({
+      success: true,
+      order
+    });
+
+  } catch (err) {
+    console.error("Error fetching order by ID:", err);
+    return next(new ErrorHandler("Unable to fetch order", 500));
+  }
+});
 
 const shippingSchema = Joi.object({
   first_name: Joi.string().required(),

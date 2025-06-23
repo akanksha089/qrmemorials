@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { toast } from 'react-toastify';
 import API_BASE_URL from '../../config'; // adjust path if needed
-import { LuSearch, LuX } from "react-icons/lu";
+import { LuSearch, LuX , LuUser } from "react-icons/lu";
 import { GoHeart } from "react-icons/go";
 import { RiShoppingBag4Line } from 'react-icons/ri'
 import Switcher from '../switcher';
@@ -102,10 +102,22 @@ export default function NavMenu({ toggle, setToggle }) {
     console.log('wishListwishListwishList', wishList)
     return (
         <div className="flex items-center gap-4 sm:gap-6">
-            <Link to="/login" className="text-lg leading-none text-title dark:text-white transition-all duration-300 hover:text-primary hidden lg:block">Login</Link>
-            <button className="hdr_search_btn" aria-label="search" onClick={() => setOpen(!open)}>
+            {token ? (
+                 <Link   to="/my-profile">
+                    <LuUser className="text-title dark:text-white size-6" />
+                </Link>
+            ) : (
+                <Link
+                    to="/login"
+                    className="text-lg leading-none text-title dark:text-white transition-all duration-300 hover:text-primary hidden lg:block"
+                >
+                    Login
+                </Link>
+            )}
+
+            {/* <button className="hdr_search_btn" aria-label="search" onClick={() => setOpen(!open)}>
                 <LuSearch className="text-title dark:text-white size-6" />
-            </button>
+            </button> */}
 
             <button className="relative hdr_wishList_btn" onClick={() => setWishList(!wishList)}>
                 {

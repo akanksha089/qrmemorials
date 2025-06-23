@@ -11,8 +11,9 @@ const {
   deleteImage,
   apiGetAllRecords,
   apiGetSingleRecord,
+  getPurchasedPackagesForUser
 } = require("../contollers/packageController");
-const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
+const { isAuthenticatedUser, authorizeRoles, isApiAuthenticatedUser } = require("../middleware/auth");
 const Model = require("../models/packageModel");
 const module_slug = Model.module_slug;
 const router = express.Router();
@@ -71,5 +72,6 @@ router
 /** REST API**/
 router.route("/api-" + module_slug + "").get(apiGetAllRecords);
 router.route("/api-" + module_slug + "/:id").get(apiGetSingleRecord);
+router.route("/purchased-packages" ).get(isApiAuthenticatedUser, getPurchasedPackagesForUser);
 
 module.exports = router;

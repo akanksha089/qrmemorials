@@ -50,6 +50,8 @@ import BlogDetailsV3 from './pages/blog/blog-details-v3'
 import BlogTag from './pages/blog/blog-tag'
 import Contact from './pages/inner-pages/contact'
 import ProductCategory from './pages/shop/product-category'
+import OrderDetails from './pages/account/order-details'
+import MyPackages from './pages/account/my-packages'
 import { WishlistProvider } from './pages/wishlist/WishlistContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -84,6 +86,7 @@ function App() {
           <Route path="/my-account" element={<MyAccount />} />
           <Route path="/edit-account" element={<EditAccount />} />
           <Route path="/order-history" element={<OrderHistory />} />
+          <Route path="/order-details/:id" element={<OrderDetails />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -114,6 +117,7 @@ function App() {
           <Route path="/blog-tag" element={<BlogTag />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/product-category" element={<ProductCategory />} />
+          <Route path="/my-packages/:id" element={<MyPackages />} />
         </Routes>
       </WishlistProvider>
 

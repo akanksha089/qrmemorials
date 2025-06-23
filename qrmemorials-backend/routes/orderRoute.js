@@ -4,7 +4,9 @@ const router = express.Router();
 const { isApiAuthenticatedUser } = require('../middleware/auth'); // If you want to protect the route
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
 
-router.post('/create-order', orderController.createOrder); // <== This is your main POST Order API
+router.post('/create-order',isApiAuthenticatedUser ,  orderController.createOrder); // <== This is your main POST Order API
+router.get('/api-order',isApiAuthenticatedUser ,  orderController.getAllOrdersAPI); // <== This is your main POST Order API
+router.get('/api-order/:id',isApiAuthenticatedUser ,  orderController.getOrderById); // <== This is your main POST Order API
 router.get('/orders',isAuthenticatedUser ,authorizeRoles("admin"), orderController.getAllOrders);
 router.post('/add-shipping', isApiAuthenticatedUser ,orderController.addShippingAddress);
 router.get('/shipping',isAuthenticatedUser ,authorizeRoles("admin"), orderController.getAllShippingAddresses);
