@@ -52,6 +52,7 @@ import Contact from './pages/inner-pages/contact'
 import ProductCategory from './pages/shop/product-category'
 import OrderDetails from './pages/account/order-details'
 import MyPackages from './pages/account/my-packages'
+import Profile from './pages/account/profile'
 import { WishlistProvider } from './pages/wishlist/WishlistContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -118,6 +119,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/product-category" element={<ProductCategory />} />
           <Route path="/my-packages/:id" element={<MyPackages />} />
+          <Route path="/profile/:packageId" element={<Profile />} />
         </Routes>
       </WishlistProvider>
 

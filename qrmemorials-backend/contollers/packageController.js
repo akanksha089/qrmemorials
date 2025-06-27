@@ -364,6 +364,371 @@ exports.getPurchasedPackagesForUser = catchAsyncErrors(async (req, res, next) =>
 });
 
 
+exports.createPackageBiography = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const {
+      package_id,
+      full_name,
+      cemetery_name,
+      birth_date,
+      death_date,
+      cemetery_location,
+      photo_position,
+      biography_text,
+      grave_location,
+      link_text_1,
+      link_url_1,
+      link_text_2,
+      link_url_2,
+      link_text_3,
+      link_url_3,
+      link_text_4,
+      link_url_4,
+      account_type
+    } = req.body;
+
+    const files = req.files || {};
+
+    // Log for debugging
+    console.log("Uploaded Files:", files);
+
+    const profile_photo = files.profile_photo?.[0]?.filename || null;
+    const background_photo = files.background_photo?.[0]?.filename || null;
+    const biography_photo = files.biography_photo?.[0]?.filename || null;
+
+    // Insert into DB
+    await db.query(
+      `INSERT INTO package_biographies 
+        (package_id, full_name, cemetery_name, birth_date, death_date, profile_photo, background_photo, cemetery_location, biography_photo, photo_position, biography_text, grave_location, link_text_1, link_url_1, link_text_2, link_url_2, link_text_3, link_url_3, link_text_4, link_url_4, account_type)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        package_id,
+        full_name,
+        cemetery_name,
+        birth_date,
+        death_date,
+        profile_photo,
+        background_photo,
+        cemetery_location,
+        biography_photo,
+        photo_position,
+        biography_text,
+        grave_location,
+        link_text_1,
+        link_url_1,
+        link_text_2,
+        link_url_2,
+        link_text_3,
+        link_url_3,
+        link_text_4,
+        link_url_4,
+        account_type
+      ]
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: "Biography created successfully",
+    });
+
+  } catch (error) {
+    // Handle and forward error only once
+    console.error("Biography creation failed:", error);
+    return next(error); // forwarded to global error handler
+  }
+});
+
+exports.updatePackageBiography = catchAsyncErrors(async (req, res, next) => {
+  const biographyId = req.params.id;
+
+  const {
+    package_id,
+    full_name,
+    cemetery_name,
+    birth_date,
+    death_date,
+    cemetery_location,
+    photo_position,
+    biography_text,
+    grave_location,
+    link_text_1,
+    link_url_1,
+    link_text_2,
+    link_url_2,
+    link_text_3,
+    link_url_3,
+    link_text_4,
+    link_url_4,
+    account_type,
+  } = req.body;
+
+  const files = req.files || {};
+  const profile_photo = files.profile_photo?.[0]?.filename || null;
+  const background_photo = files.background_photo?.[0]?.filename || null;
+  const biography_photo = files.biography_photo?.[0]?.filename || null;
+
+  // Prepare fields and values to update
+  const updateFields = [
+    "package_id = ?",
+    "full_name = ?",
+    "cemetery_name = ?",
+    "birth_date = ?",
+    "death_date = ?",
+    "cemetery_location = ?",
+    "photo_position = ?",
+    "biography_text = ?",
+    "grave_location = ?",
+    "link_text_1 = ?",
+    "link_url_1 = ?",
+    "link_text_2 = ?",
+    "link_url_2 = ?",
+    "link_text_3 = ?",
+    "link_url_3 = ?",
+    "link_text_4 = ?",
+    "link_url_4 = ?",
+    "account_type = ?"
+  ];
+
+  // Add photo columns if new files uploaded (optional)
+  if (profile_photo) updateFields.push("profile_photo = ?");
+  if (background_photo) updateFields.push("background_photo = ?");
+  if (biography_photo) updateFields.push("biography_photo = ?");
+
+  // Collect values in the same order
+  const values = [
+    package_id,
+    full_name,
+    cemetery_name,
+    birth_date,
+    death_date,
+    cemetery_location,
+    photo_position,
+    biography_text,
+    grave_location,
+    link_text_1,
+    link_url_1,
+    link_text_2,
+    link_url_2,
+    link_text_3,
+    link_url_3,
+    link_text_4,
+    link_url_4,
+    account_type,
+  ];
+
+  if (profile_photo) values.push(profile_photo);
+  if (background_photo) values.push(background_photo);
+  if (biography_photo) values.push(biography_photo);
+
+  values.push(biographyId);
+
+  const sql = `UPDATE package_biographies SET ${updateFields.join(", ")} WHERE id = ?`;
+
+  await db.query(sql, values);
+
+  res.status(200).json({ success: true, message: "Biography updated successfully" });
+});
+
+exports.apiGetSingleBiography = catchAsyncErrors(async (req, res, next) => {
+  const id = req.params.id;
+  const [rows] = await db.query("SELECT * FROM package_biographies WHERE id = ?", [id]);
+
+  if (!rows.length) {
+    return res.status(404).json({ success: false, error: "Biography not found" });
+  }
+
+  const biography = rows[0];
+
+  const baseUrl = `${req.protocol}://${req.get("host")}/uploads/packages`;
+
+  biography.profile_photo = biography.profile_photo
+    ? `${baseUrl}/${biography.profile_photo}`
+    : null;
+
+  biography.background_photo = biography.background_photo
+    ? `${baseUrl}/${biography.background_photo}`
+    : null;
+
+  biography.biography_photo = biography.biography_photo
+    ? `${baseUrl}/${biography.biography_photo}`
+    : null;
+
+  res.status(200).json({ success: true, biography });
+});
+
+// Controller: uploadGalleryImages
+exports.uploadGalleryImages = catchAsyncErrors(async (req, res, next) => {
+  const packageId = req.params.id;
+  const files = req.files;
+
+  if (!files || files.length === 0) {
+    return res.status(400).json({ success: false, message: 'No images uploaded.' });
+  }
+
+  // Insert images into gallery with type = 'image'
+  const insertValues = files.map(file => [
+    packageId,
+    'image',
+    file.filename, // media_url
+    null           // vimeo_uri for images is null
+  ]);
+
+  await db.query(
+    'INSERT INTO package_gallery (package_id, type, media_url, vimeo_uri) VALUES ?',
+    [insertValues]
+  );
+
+  const imageUrls = files.map(file => `${req.protocol}://${req.get('host')}/uploads/gallery/${file.filename}`);
+
+  res.status(200).json({
+    success: true,
+    message: `${files.length} images uploaded successfully.`,
+    images: imageUrls
+  });
+});
+
+
+exports.getPackageGallery = catchAsyncErrors(async (req, res, next) => {
+  const packageId = req.params.id;
+
+  const [rows] = await db.query(
+    'SELECT type, media_url FROM package_gallery WHERE package_id = ? ORDER BY created_at DESC',
+    [packageId]
+  );
+
+  const mediaItems = rows.map(row => ({
+    type: row.type,
+    url: row.type === 'image'
+      ? `${req.protocol}://${req.get('host')}/uploads/gallery/${row.media_url}`
+      : row.media_url
+  }));
+
+  res.status(200).json({
+    success: true,
+    gallery: mediaItems
+  });
+});
+
+exports.createPackageEulogy = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const {
+      package_id,
+      eulogy_text,
+    } = req.body;
+
+    // Insert into DB
+    await db.query(
+      `INSERT INTO package_eulogy 
+        (package_id, eulogy_text)
+       VALUES (?, ?)`,
+      [
+        package_id,
+        eulogy_text,
+      ]
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: "Eulogy created successfully",
+    });
+
+  } catch (error) {
+    // Handle and forward error only once
+    console.error("Eulogy creation failed:", error);
+    return next(error); // forwarded to global error handler
+  }
+});
+
+exports.updatePackageEulogy = catchAsyncErrors(async (req, res, next) => {
+  const eulogyId = req.params.id;
+
+  const {
+    package_id,
+    eulogy_text,
+  } = req.body;
+
+  // Prepare fields and values to update
+  const updateFields = [
+    "package_id = ?",
+    "eulogy_text = ?",
+  ];
+
+
+  // Collect values in the same order
+  const values = [
+    package_id,
+    eulogy_text,
+  ];
+
+  values.push(eulogyId);
+
+  const sql = `UPDATE package_eulogy SET ${updateFields.join(", ")} WHERE id = ?`;
+
+  await db.query(sql, values);
+
+  res.status(200).json({ success: true, message: "Eulogy updated successfully" });
+});
+
+exports.apiGetSingleEulogy = catchAsyncErrors(async (req, res, next) => {
+  const id = req.params.id;
+  const [rows] = await db.query("SELECT * FROM package_eulogy WHERE id = ?", [id]);
+
+  if (!rows.length) {
+    return res.status(404).json({ success: false, error: "Eulogy not found" });
+  }
+
+  const eulogy = rows[0];
+
+  res.status(200).json({ success: true, eulogy });
+});
+
+exports.createFamilyMembers = catchAsyncErrors(async (req, res, next) => {
+  const { package_id, members } = req.body;
+
+  if (!package_id || !Array.isArray(members)) {
+    return res.status(400).json({ success: false, message: "Missing package_id or members array" });
+  }
+
+  const insertValues = members.map(member => [package_id, member.relation, member.name, member.sortNumber]);
+
+  await db.query(
+    `INSERT INTO package_family_members (package_id, relation, name, sort_number) VALUES ?`,
+    [insertValues]
+  );
+
+  res.status(201).json({ success: true, message: "Family members added successfully" });
+});
+exports.getFamilyMembers = catchAsyncErrors(async (req, res, next) => {
+  const { packageId } = req.params;
+
+  const [rows] = await db.query(
+    `SELECT id, relation, name, sort_number FROM package_family_members WHERE package_id = ? ORDER BY sort_number ASC`,
+    [packageId]
+  );
+
+  res.status(200).json({ success: true, members: rows });
+});
+exports.updateFamilyMembers = catchAsyncErrors(async (req, res, next) => {
+  const { package_id, members } = req.body;
+
+  if (!package_id || !Array.isArray(members)) {
+    return res.status(400).json({ success: false, message: "Missing package_id or members array" });
+  }
+
+  // Delete old members
+  await db.query(`DELETE FROM package_family_members WHERE package_id = ?`, [package_id]);
+
+  // Insert new ones
+  const insertValues = members.map(member => [package_id, member.relation, member.name, member.sortNumber]);
+
+  await db.query(
+    `INSERT INTO package_family_members (package_id, relation, name, sort_number) VALUES ?`,
+    [insertValues]
+  );
+
+  res.status(200).json({ success: true, message: "Family members updated successfully" });
+});
+
 function truncateText(text, maxLength) {
   if (text.length <= maxLength) return text;
   return text.slice(0, maxLength) + "..."; // Truncate and add ellipsis

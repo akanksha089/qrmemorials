@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom'
 
 import NavbarOne from '../../components/navbar/navbar-one'
@@ -6,9 +6,7 @@ import bg from '../../assets/img/shortcode/breadcumb.jpg'
 import AccountTab from '../../components/account/account-tab'
 import FooterOne from '../../components/footer/footer-one'
 import ScrollToTop from '../../components/scroll-to-top'
-
-import { cartData } from '../../data/data'
-import API_BASE_URL from '../../config'; // adjust path if needed
+import {API_BASE_URL} from '../../config'; // adjust path if needed
 import { getUserData } from '../../utility/auth'
 
 import Aos from 'aos'

@@ -28,7 +28,7 @@ const loadQuill = async () => {
   return Quill;
 };
 
-const QuillEditor = () => {
+const QuillEditor = ({ formData, handleChange }) => {
   const editorRef = useRef(null);
   const [quillInstance, setQuillInstance] = useState(null);
 
@@ -59,10 +59,27 @@ const QuillEditor = () => {
           formula: true,
         },
       });
+      quill.clipboard.dangerouslyPasteHTML(formData.biography_text || '');
 
+    // Update formData on text change
+      quill.on('text-change', () => {
+        const html = editorRef.current.querySelector('.ql-editor')?.innerHTML || '';
+        handleChange({
+          target: {
+            name: 'biography_text',
+            value: html,
+          }
+        });
+      });
       setQuillInstance(quill);
     })();
   }, []);
+
+  useEffect(() => {
+  if (quillInstance && formData.biography_text) {
+    quillInstance.clipboard.dangerouslyPasteHTML(formData.biography_text);
+  }
+}, [formData.biography_text, quillInstance]);
 
   return (
     <div id="standalone-container">

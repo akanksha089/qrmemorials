@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getUserData } from '../../utility/auth';
-import API_BASE_URL from "../../config";
+import {API_BASE_URL} from "../../config";
 
 export default function AccountTab() {
     const [current, setCurrent] = useState('')

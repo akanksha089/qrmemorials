@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom'
 
 import { toast } from 'react-toastify';
-import API_BASE_URL from '../../config'; // adjust path if needed
+import {API_BASE_URL} from "../../config"; // adjust path if needed
 import { LuSearch, LuX , LuUser } from "react-icons/lu";
 import { GoHeart } from "react-icons/go";
 import { RiShoppingBag4Line } from 'react-icons/ri'

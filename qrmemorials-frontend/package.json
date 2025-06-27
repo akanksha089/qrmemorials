@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "aos": "^2.3.4",
+    "axios": "^1.10.0",
     "highlight.js": "^11.11.1",
     "katex": "^0.16.22",
     "multi-range-slider-react": "^2.0.7",
@@ -25,6 +26,7 @@
     "react-icons": "^5.4.0",
     "react-modal-video": "^2.0.2",
     "react-owl-carousel": "^2.3.3",
+    "react-qr-code": "^2.0.16",
     "react-quill": "^2.0.0",
     "react-router-dom": "^6.22.3",
     "react-toastify": "^11.0.5",

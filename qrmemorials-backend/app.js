@@ -9,13 +9,15 @@ const expressLayouts = require("express-ejs-layouts");
 const errorMiddleware = require("./middleware/error");
 const multer = require('multer');
 const app = express();
+const dotenv = require('dotenv');
+dotenv.config({ path: './config/config.env' });
 
 const upload = multer();
 // CORS setup
 app.use(
   cors({
-origin: "https://soul-link-ten.vercel.app", // Adjust your frontend URL
-   //origin: "http://localhost:5173", // Adjust your frontend URL
+   origin: "https://soul-link-ten.vercel.app", // Adjust your frontend URL
+     //origin: "http://localhost:5173", // Adjust your frontend URL
     credentials: true,
   })
 );
@@ -64,7 +66,7 @@ const testimonials = require("./routes/testimonialRoute");
 const contact = require("./routes/contactRoute");
 const feature = require("./routes/featureRoute");
 const block = require("./routes/orderRoute");
-
+const vedio = require("./routes/videoRoutes")
 // Admin routes
 app.use("/admin", user);
 app.use("/admin", blogs);
@@ -91,6 +93,7 @@ app.use("/api/v1", testimonials);
 app.use("/api/v1", contact);
 app.use("/api/v1", feature);
 app.use("/api/v1", block);
+app.use("/api/v1", vedio);
 
 // Error Middleware
 app.use(errorMiddleware);

@@ -11,12 +11,24 @@ const {
   deleteImage,
   apiGetAllRecords,
   apiGetSingleRecord,
-  getPurchasedPackagesForUser
+  getPurchasedPackagesForUser,
+  createPackageBiography,
+  updatePackageBiography,
+  apiGetSingleBiography,
+  uploadGalleryImages ,
+  getPackageGallery, 
+  apiGetSingleEulogy,
+  updatePackageEulogy,
+  createPackageEulogy,
+  createFamilyMembers,
+  getFamilyMembers,
+  updateFamilyMembers
 } = require("../contollers/packageController");
 const { isAuthenticatedUser, authorizeRoles, isApiAuthenticatedUser } = require("../middleware/auth");
 const Model = require("../models/packageModel");
 const module_slug = Model.module_slug;
 const router = express.Router();
+const uploadGallery = require('../middleware/uploadGallery');
 
 var Storage = multer.diskStorage({
   destination: function (req, file, callback) {
@@ -73,5 +85,39 @@ router
 router.route("/api-" + module_slug + "").get(apiGetAllRecords);
 router.route("/api-" + module_slug + "/:id").get(apiGetSingleRecord);
 router.route("/purchased-packages" ).get(isApiAuthenticatedUser, getPurchasedPackagesForUser);
-
+router.post(
+  "/packages/biography",
+  upload.fields([
+    { name: "profile_photo", maxCount: 1 },
+    { name: "background_photo", maxCount: 1 },
+    { name: "biography_photo", maxCount: 1 },
+  ]),
+  isApiAuthenticatedUser,
+  createPackageBiography
+);
+router.route("/packages/biography/:id").get(isApiAuthenticatedUser, apiGetSingleBiography);
+router.route("/packages/biography/update/:id").post(
+  upload.fields([
+    { name: "profile_photo" },
+    { name: "background_photo" },
+    { name: "biography_photo" }
+  ]),
+  isApiAuthenticatedUser,
+  updatePackageBiography
+);
+router.post(
+  "/packages/eulogy",
+  isApiAuthenticatedUser,
+  createPackageEulogy
+);
+router.route("/packages/eulogy/:id").get(isApiAuthenticatedUser, apiGetSingleEulogy);
+router.route("/packages/eulogy/update/:id").post(
+  isApiAuthenticatedUser,
+  updatePackageEulogy
+);
+router.post('/packages/:id/gallery', uploadGallery.array('images', 10),  isApiAuthenticatedUser, uploadGalleryImages);
+router.route("/packages/gallery/:id").get(isApiAuthenticatedUser, getPackageGallery);
+router.post("/packages/family", isApiAuthenticatedUser, createFamilyMembers);
+router.get("/packages/family/:packageId", isApiAuthenticatedUser, getFamilyMembers);
+router.put("/packages/family/:packageId", isApiAuthenticatedUser, updateFamilyMembers);
 module.exports = router;

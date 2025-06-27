@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import  { useState , useEffect} from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
-function familyTree() {
-    const [members, setMembers] = useState([
-        { relation: '', name: '', sortNumber: '' },
-    ]);
+function familyTree({ packageId, token, activeTab, API_BASE_URL }) {
+    const [members, setMembers] = useState([{ relation: "", name: "", sortNumber: "" }]);
+    const [isEditMode, setIsEditMode] = useState(false);
 
     const handleChange = (index, field, value) => {
         const updated = [...members];
@@ -11,8 +12,9 @@ function familyTree() {
         setMembers(updated);
     };
 
+
     const addMember = () => {
-        setMembers([...members, { relation: '', name: '', sortNumber: '' }]);
+        setMembers([...members, { relation: "", name: "", sortNumber: "" }]);
     };
 
     const removeMember = (index) => {
@@ -21,6 +23,73 @@ function familyTree() {
             setMembers(updated);
         }
     };
+
+    const handleFamilySubmit = async () => {
+        if (!packageId || members.length === 0) {
+            toast.error("Please enter package ID and at least one member.");
+            return;
+        }
+
+        const cleanedMembers = members
+            .filter((m) => m.name && m.relation)
+            .map((m) => ({
+                name: m.name,
+                relation: m.relation,
+                sortNumber: parseInt(m.sortNumber) || 0,
+            }));
+
+        try {
+            const url = `${API_BASE_URL}/api/v1/packages/family${isEditMode ? `/${packageId}` : ""}`;
+            const method = isEditMode ? "put" : "post";
+
+            const res = await axios({
+                method,
+                url,
+                data: {
+                    package_id: packageId,
+                    members: cleanedMembers,
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (res.data.success) {
+                toast.success(`Family members ${isEditMode ? "updated" : "created"} successfully`);
+            } else {
+                toast.error(res.data.message || "Operation failed.");
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Something went wrong while submitting.");
+        }
+    };
+  const loadFamilyMembers = async () => {
+    try {
+      const res = await axios.get(`${API_BASE_URL}/api/v1/packages/family/${packageId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.data.success) {
+        const fetched = res.data.members.map((m) => ({
+          name: m.name,
+          relation: m.relation,
+          sortNumber: m.sort_number || "",
+        }));
+        setMembers(fetched);
+        setIsEditMode(true);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load family members");
+    }
+  };
+    useEffect(() => {
+    if (packageId && activeTab === "Family Tree") {
+      loadFamilyMembers();
+    }
+  }, [packageId, activeTab]);
     return (
         <div className="w-full   dark:bg-dark-secondary p-5 sm:p-8 lg:p-[50px]">
             <h4 className="font-medium leading-none text-xl sm:text-2xl mb-5 sm:mb-6 ">Family Tree
@@ -110,7 +179,7 @@ function familyTree() {
 
 
             <div className="mt-5 sm:mt-8 md:mt-12">
-                <button className="btn btn-solid" data-text="Submit">
+                <button onClick={handleFamilySubmit}  className="btn btn-solid" data-text="Submit">
                     <span>Submit</span>
                 </button>
             </div>

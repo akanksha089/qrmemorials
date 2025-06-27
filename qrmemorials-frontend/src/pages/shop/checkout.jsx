@@ -12,7 +12,7 @@ import ScrollToTop from "../../components/scroll-to-top";
 import Aos from "aos";
 import { getUserData } from '../../utility/auth'
 import { toast } from 'react-toastify';
-import API_BASE_URL from '../../config'; // adjust path if needed
+import {API_BASE_URL} from '../../config'; // adjust path if needed
 export default function Checkout() {
 
     const [open, setOpen] = useState(false);

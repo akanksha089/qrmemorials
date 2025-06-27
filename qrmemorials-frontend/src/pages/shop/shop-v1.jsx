@@ -12,7 +12,7 @@ import bg from '../../assets/img/shortcode/breadcumb.jpg'
 import { productList } from "../../data/data";
 
 import Aos from "aos";
-import API_BASE_URL from '../../config'; // adjust path if needed
+import {API_BASE_URL} from '../../config'; // adjust path if needed
 
 export default function ShopV1() {
     const [packages, setPackages] = useState([]);

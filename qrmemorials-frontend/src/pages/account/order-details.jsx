@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import API_BASE_URL from "../../config";
+import {API_BASE_URL} from "../../config";
 import { getUserData } from '../../utility/auth'
 import bg from '../../assets/img/shortcode/breadcumb.jpg'
 import NavbarOne from '../../components/navbar/navbar-one'

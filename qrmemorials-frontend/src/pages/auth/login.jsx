@@ -8,7 +8,7 @@ import ScrollToTop from "../../components/scroll-to-top";
 import bg from '../../assets/img/bg/login.jpg'
 
 import Aos from "aos";
-import API_BASE_URL from '../../config'; // adjust path if needed
+import {API_BASE_URL} from '../../config'; // adjust path if needed
 import { saveUserData } from "../../utility/auth";
 export default function Login() {
     const navigate = useNavigate();

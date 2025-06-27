@@ -17,7 +17,7 @@ import ScrollToTop from '../../components/scroll-to-top';
 
 import { productList, productTag } from '../../data/data';
 import { FaFacebookF, FaInstagram, FaTwitter } from 'react-icons/fa';
-import API_BASE_URL from '../../config'; // adjust path if needed
+import {API_BASE_URL} from '../../config'; // adjust path if needed
 import { WishlistContext } from '../wishlist/WishlistContext';
 import { getUserData } from '../../utility/auth'
 import { toast } from 'react-toastify';

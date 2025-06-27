@@ -25,6 +25,11 @@ Accept: application/json
 
 
 
+### Get a purchase package gallary
+GET http://localhost:4000/api/v1//packages/gallery/1
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzUwNzY2MzI2LCJleHAiOjE3NTExOTgzMjZ9.6883WclEa_-BUOUcgS3xcpg1bVfC7Zgph7bkMhb0IJY
+
 ### Get a purchase package data
 GET http://localhost:4000/api/v1/purchased-packages
 Accept: application/json
