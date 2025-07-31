@@ -1036,7 +1036,7 @@ exports.getAccessRequests = async (req, res) => {
 
 function truncateText(text, maxLength) {
   if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength) + "..."; // Truncate and add ellipsis
+  return text.slice(0, maxLength) + "..."; 
 }
 
 function formatDate(dateString) {
