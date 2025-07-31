@@ -39,7 +39,7 @@ export default function AccountTab() {
         }
         fetchPackages();
     }, [])
-    console.log('packages', packages)
+
     return (
         <ul className="divide-y dark:divide-paragraph text-title dark:text-white text-base sm:text-lg lg:text-xl flex flex-col justify-center leading-none">
             <li className={` py-3 lg:py-6 pl-6 lg:pl-12 ${current === '/my-profile' ? 'active text-primary' : ''}`}>

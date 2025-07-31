@@ -26,7 +26,7 @@ export default function Cart() {
     useEffect(() => {
         const fetchCartItem = async () => {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/v1/cart`, {
+                const response = await fetch(`${API_BASE_URL}/api/v1/cart/all-cart`, {
                     headers: {
                         Accept: 'application/json',
                         Authorization: `Bearer ${token}`

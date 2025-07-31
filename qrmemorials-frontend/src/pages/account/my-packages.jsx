@@ -14,7 +14,7 @@ import Tributes from '../../components/account/tributes';
 import UserRequests from '../../components/account/user-requests';
 import QRCodeTab from '../../components/account/qr-code';
 import Aos from 'aos';
-import {API_BASE_URL} from '../../config'; // adjust path if needed
+import { API_BASE_URL } from '../../config'; // adjust path if needed
 import { getUserData } from '../../utility/auth'
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -54,6 +54,8 @@ const MyPackages = () => {
         background_photo: null,
         biography_photo: null
     });
+    const [tributes, setTributes] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [biographyExists, setBiographyExists] = useState(false);
     const [biographyId, setBiographyId] = useState(null);
     const [eulogyExists, setEulogyExists] = useState(false);
@@ -64,7 +66,9 @@ const MyPackages = () => {
     const [message, setMessage] = useState('');
     const [videoFile, setVideoFile] = useState(null);
     const [uploading, setUploading] = useState(false);
-
+    const [videos, setVideos] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [error, setError] = useState('');
     const { id: packageId } = useParams();
 
     const userToken = getUserData();
@@ -145,6 +149,7 @@ const MyPackages = () => {
         fetchBiography();
     }, [activeTab, formData.package_id, token]);
 
+
     useEffect(() => {
         if (activeTab !== "Eulogy" || !eulogyData.package_id) return;
 
@@ -176,6 +181,64 @@ const MyPackages = () => {
         fetchEulogy();
     }, [activeTab, eulogyData.package_id, token]);
 
+    useEffect(() => {
+        const fetchTributes = async () => {
+            try {
+                const res = await axios.get(`${API_BASE_URL}/api/v1/packages/all-tributes/${packageId}`
+                    , {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
+                );
+                setTributes(res.data.tributes);
+            } catch (error) {
+                console.error("Error fetching tributes:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        const fetchVideos = async () => {
+            try {
+                const res = await axios.get(`${API_BASE_URL}/api/v1/packages/${packageId}/videos`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                });
+
+                if (res.data.success) {
+                    setVideos(res.data.videos);
+                } else {
+                    setError('Failed to load videos.');
+                }
+            } catch (err) {
+                setError(err.response?.data?.message || 'Error fetching videos.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        const fetchRequests = async () => {
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/v1/access-requests`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    setUsers(data.requests);
+                } else {
+                    console.warn("Failed to load requests");
+                }
+            } catch (err) {
+                console.error("Error fetching requests:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchTributes(); fetchVideos(); fetchRequests();
+
+    }, []);
     const handleTabClick = (tab) => {
         setActiveTab(tab)
     }
@@ -349,7 +412,7 @@ const MyPackages = () => {
         }
 
         const formData = new FormData();
-        formData.append('video', videoFile); // 'video' must match multer field name
+        formData.append('video', videoFile);
         formData.append('package_id', packageId);
         formData.append('name', videoFile.name);
         formData.append('description', 'Video gallery item');
@@ -360,12 +423,28 @@ const MyPackages = () => {
             const res = await axios.post(`${API_BASE_URL}/api/v1/videos/upload`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    Authorization: `Bearer ${token}`, // if needed
+                    Authorization: `Bearer ${token}`,
                 },
             });
 
-            toast.success(res.data.message || 'Video uploaded successfully');
-            setVideoFile(null);
+            if (res.data.success) {
+                toast.success(res.data.message || 'Video uploaded successfully');
+                const { videoUri, playerUrl } = res.data;
+
+                // Optional: Create a temporary video object for UI
+                const newVideo = {
+                    id: Date.now(), // or backend ID if returned
+                    vimeo_uri: videoUri,
+                    media_url: playerUrl,
+                    vimeo_url: playerUrl, // optional alias for display
+                };
+
+                // ✅ Add it to the existing videos list
+                setVideos((prev) => [...prev, newVideo]);
+                setVideoFile(null);
+            } else {
+                toast.error('Upload failed.');
+            }
         } catch (err) {
             console.error(err);
             toast.error('Upload failed. Check console.');
@@ -374,6 +453,34 @@ const MyPackages = () => {
         }
     };
 
+    const approveRequest = async (requestId) => {
+        try {
+
+            const res = await fetch(
+                `${API_BASE_URL}/api/v1/access-request/${requestId}/approve`,
+                {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const data = await res.json();
+            if (data.success) {
+                setUsers((prev) =>
+                    prev.map((user) =>
+                        user.requestId === requestId ? { ...user, active: true } : user
+                    )
+                );
+                toast.success("Request approved successfully ✅");
+            } else {
+                toast.error(`Failed: ${data.message}`);
+            }
+        } catch (err) {
+            console.error("Approval error:", err);
+        }
+    };
 
 
     return (
@@ -425,6 +532,9 @@ const MyPackages = () => {
                                 />}
                                 {activeTab === "Videos" && <Videos handleFileChangeVedio={handleFileChangeVedio}
                                     handleUploadVedio={handleUploadVedio}
+                                    videos={videos}
+                                    uploading={uploading}
+
                                 />}
                                 {activeTab === "Eulogy" && <Eulogy
                                     handleChangeEulogy={handleChangeEulogy}
@@ -437,11 +547,17 @@ const MyPackages = () => {
                                     activeTab={activeTab}
                                     API_BASE_URL={API_BASE_URL}
                                 />}
-                                {activeTab === "Tributes" && <Tributes />}
-                                {activeTab === "User Requests" && <UserRequests />}
-                                {activeTab === "QR Code" && <QRCodeTab  
-                                 packageId={packageId}
-                                 />}
+                                {activeTab === "Tributes" &&
+                                    <Tributes
+                                        tributes={tributes}
+                                    />}
+                                {activeTab === "User Requests" && <UserRequests
+                                    users={users}
+                                    approveRequest={approveRequest}
+                                />}
+                                {activeTab === "QR Code" && <QRCodeTab
+                                    packageId={packageId}
+                                />}
                             </div>
 
                         </div>

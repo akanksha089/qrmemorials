@@ -1,20 +1,14 @@
-import { useState } from "react";
 
-function userRequests() {
-      const [users, setUsers] = useState([
-    { id: 1, name: "Alice Johnson", email: "alice@example.com", active: true },
-    { id: 2, name: "Bob Smith", email: "bob@example.com", active: false },
-    { id: 3, name: "Charlie Davis", email: "charlie@example.com", active: true },
-  ]);
+function userRequests({approveRequest, users}) {
 
-  // Toggle active state handler
+  
   const toggleActive = (id) => {
-    setUsers((prev) =>
-      prev.map((user) =>
-        user.id === id ? { ...user, active: !user.active } : user
-      )
-    );
+    const user = users.find((u) => u.id === id);
+    if (!user.active) {
+      approveRequest(user.requestId);
+    }
   };
+
   return (
     <div className="w-full dark:bg-dark-secondary p-5 sm:p-8 lg:p-[50px]">
       <h4 className="font-medium leading-none text-xl sm:text-2xl mb-5 sm:mb-6">
@@ -32,7 +26,8 @@ function userRequests() {
             </tr>
           </thead>
           <tbody>
-            {users.map((user, idx) => (
+            {users && users.length > 0 ?
+            users.map((user, idx) => (
               <tr key={user.id} className="border-t border-gray-200 dark:border-gray-700">
                 <td className="p-4 text-gray-800 dark:text-gray-200">{idx + 1}</td>
                 <td className="p-4 text-gray-800 dark:text-gray-200">{user.name}</td>
@@ -52,7 +47,13 @@ function userRequests() {
                   </label>
                 </td>
               </tr>
-            ))}
+            )) : 
+            <tr>
+              <td colSpan="4" className="p-4 text-center text-gray-500 dark:text-gray-400">
+                No user requests found.
+              </td>
+               </tr>
+           }
           </tbody>
         </table>
       </div>

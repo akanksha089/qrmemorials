@@ -2,8 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom'
 
 import { toast } from 'react-toastify';
-import {API_BASE_URL} from "../../config"; // adjust path if needed
-import { LuSearch, LuX , LuUser } from "react-icons/lu";
+import { API_BASE_URL } from "../../config"; // adjust path if needed
+import { LuSearch, LuX, LuUser } from "react-icons/lu";
 import { GoHeart } from "react-icons/go";
 import { RiShoppingBag4Line } from 'react-icons/ri'
 import Switcher from '../switcher';
@@ -28,7 +28,7 @@ export default function NavMenu({ toggle, setToggle }) {
     useEffect(() => {
         const fetchCartItem = async () => {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/v1/cart`, {
+                const response = await fetch(`${API_BASE_URL}/api/v1/cart/all-cart`, {
                     headers: {
                         Accept: 'application/json',
                         Authorization: `Bearer ${token}`
@@ -99,11 +99,11 @@ export default function NavMenu({ toggle, setToggle }) {
     }, 0);
     const totalCartQuantity = cartItem.reduce((acc, item) => acc + (item.quantity || 1), 0);
     const totalWishlistQuantity = Array.isArray(wishlist) ? wishlist.length : 0;
-    console.log('wishListwishListwishList', wishList)
+
     return (
         <div className="flex items-center gap-4 sm:gap-6">
             {token ? (
-                 <Link   to="/my-profile">
+                <Link to="/my-profile">
                     <LuUser className="text-title dark:text-white size-6" />
                 </Link>
             ) : (

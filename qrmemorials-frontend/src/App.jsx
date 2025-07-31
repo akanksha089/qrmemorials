@@ -56,6 +56,7 @@ import Profile from './pages/account/profile'
 import { WishlistProvider } from './pages/wishlist/WishlistContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ProtectedRoute from "./utility/ProtectedRoute";
 function App() {
 
   return (
@@ -83,12 +84,12 @@ function App() {
           <Route path="/portfolio-details-v2" element={<PortfolioDetailsV2 />} />
           <Route path="/portfolio-details-v2/:id" element={<PortfolioDetailsV2 />} />
           <Route path="/error" element={<Error />} />
-          <Route path="/my-profile" element={<MyProfile />} />
-          <Route path="/my-account" element={<MyAccount />} />
-          <Route path="/edit-account" element={<EditAccount />} />
-          <Route path="/order-history" element={<OrderHistory />} />
-          <Route path="/order-details/:id" element={<OrderDetails />} />
-          <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="/my-profile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
+          <Route path="/my-account" element={  <ProtectedRoute><MyAccount /></ProtectedRoute> } />
+          <Route path="/edit-account" element={<ProtectedRoute><EditAccount /></ProtectedRoute>} />
+          <Route path="/order-history" element={<ProtectedRoute><OrderHistory /></ProtectedRoute>} />
+          <Route path="/order-details/:id" element={<ProtectedRoute><OrderDetails /></ProtectedRoute>} />
+          <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forger-password" element={<ForgerPassword />} />
@@ -100,14 +101,14 @@ function App() {
           <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-failure" element={<PaymentFailure />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+          <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
           <Route path="/shop-v1" element={<ShopV1 />} />
           <Route path="/shop-v2" element={<ShopV2 />} />
           <Route path="/shop-v3" element={<ShopV3 />} />
           <Route path="/shop-v4" element={<ShopV4 />} />
-          <Route path="/product-details" element={<ProductDetails />} />
-          <Route path="/product-details/:id" element={<ProductDetails />} />
+          <Route path="/product-details" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>} />
+          <Route path="/product-details/:id" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>} />
           <Route path="/blog-v1" element={<BlogV1 />} />
           <Route path="/blog-v2" element={<BlogV2 />} />
           <Route path="/blog-details-v1" element={<BlogDetailsV1 />} />
@@ -117,9 +118,9 @@ function App() {
           <Route path="/blog-details-v3" element={<BlogDetailsV3 />} />
           <Route path="/blog-tag" element={<BlogTag />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/product-category" element={<ProductCategory />} />
-          <Route path="/my-packages/:id" element={<MyPackages />} />
-          <Route path="/profile/:packageId" element={<Profile />} />
+          <Route path="/product-category" element={<ProtectedRoute><ProductCategory /></ProtectedRoute>} />
+          <Route path="/my-packages/:id" element={<ProtectedRoute><MyPackages /></ProtectedRoute>} />
+          <Route path="/profile/:id" element={<Profile />} />
         </Routes>
       </WishlistProvider>
 

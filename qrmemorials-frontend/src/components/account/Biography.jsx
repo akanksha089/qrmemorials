@@ -38,9 +38,6 @@ function Biography({ handleChange, handleFileChange, handleSubmit, formData, fil
     }, [files, formData]);
 
 
-
-
-    console.log('formData.biography_text', formData.biography_text)
     return (
         <form onSubmit={handleSubmit} encType="multipart/form-data">
             <div className="w-full  bg-[#F8F8F9] dark:bg-dark-secondary p-5 sm:p-8 lg:p-[50px]">
