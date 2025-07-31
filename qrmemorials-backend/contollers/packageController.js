@@ -39,11 +39,11 @@ exports.createRecord = catchAsyncErrors(async (req, res, next) => {
 
     // Parse features from form data
     const features = [];
-    
+
     // Method 1: Check if features are already in array format
     if (req.body.features && Array.isArray(req.body.features)) {
       features.push(...req.body.features.filter(f => f.title && f.description));
-    } 
+    }
     // Method 2: Parse from form field names
     else {
       // Get all feature indices
@@ -59,7 +59,7 @@ exports.createRecord = catchAsyncErrors(async (req, res, next) => {
       for (const index of featureIndices) {
         const title = req.body[`features[${index}][title]`];
         const description = req.body[`features[${index}][description]`];
-        
+
         if (title && description) {
           features.push({ title, description });
         }
@@ -75,7 +75,7 @@ exports.createRecord = catchAsyncErrors(async (req, res, next) => {
     const packageData = {
       title: req.body.title,
       price: req.body.price,
-          image: req.file ? req.file.filename : null, // Just store filename
+      image: req.file ? req.file.filename : null, // Just store filename
       features: JSON.stringify(features),
       created_at: new Date(),
       updated_at: new Date()
@@ -92,9 +92,9 @@ exports.createRecord = catchAsyncErrors(async (req, res, next) => {
       package: {
         id: newPackageId,
         ...packageData,
-        image_url: packageData.image 
-    ? `${req.protocol}://${req.get('host')}/uploads/packages/${packageData.image}`
-    : null,
+        image_url: packageData.image
+          ? `${req.protocol}://${req.get('host')}/uploads/packages/${packageData.image}`
+          : null,
         features: features
       }
     };
@@ -108,8 +108,8 @@ exports.createRecord = catchAsyncErrors(async (req, res, next) => {
 
   } catch (error) {
     console.error("Package creation error:", error);
-    
-    const errorMessage = error.details 
+
+    const errorMessage = error.details
       ? error.details.map(d => d.message).join(", ")
       : error.message;
 
@@ -281,8 +281,8 @@ exports.getAllRecords = catchAsyncErrors(async (req, res, next) => {
     ...r,
     features: JSON.parse(r.features || "[]"),
   }));
-       const message = req.flash('msg_response');
-   res.render(module_slug+'/index',{ layout: module_layout,title : module_title,message, records: parsedRecords,module_slug})
+  const message = req.flash('msg_response');
+  res.render(module_slug + '/index', { layout: module_layout, title: module_title, message, records: parsedRecords, module_slug })
 
 });
 
@@ -298,19 +298,19 @@ exports.getSingleRecord = catchAsyncErrors(async (req, res, next) => {
 
   // Parse the 'features' array from the record (if exists)
   record.features = JSON.parse(record.features || "[]");
-  res.render(module_slug+'/detail',{ layout: module_layout,title : module_single_title,    record: record, })
+  res.render(module_slug + '/detail', { layout: module_layout, title: module_single_title, record: record, })
 
 });
 
 exports.apiGetAllRecords = catchAsyncErrors(async (req, res, next) => {
   const [records] = await db.query(`SELECT * FROM ${table_name} ORDER BY id DESC`);
-  
+
   const recordsWithUrls = records.map(record => ({
     ...record,
     features: JSON.parse(record.features || '[]'),
-     image_url: record.image 
-    ? `${req.protocol}://${req.get('host')}/uploads/packages/${record.image}`
-    : null
+    image_url: record.image
+      ? `${req.protocol}://${req.get('host')}/uploads/packages/${record.image}`
+      : null
   }));
 
   res.status(200).json({
@@ -320,17 +320,17 @@ exports.apiGetAllRecords = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.apiGetSingleRecord = catchAsyncErrors(async (req, res, next) => {
- const  record = await QueryModel.findById(table_name, req.params.id, next);
+  const record = await QueryModel.findById(table_name, req.params.id, next);
 
   if (!record) {
     return next(new ErrorHandler("Record not found", 404));
   }
-record.features = JSON.parse(record.features || '[]');
-record.image_url= record.image ?  `${req.protocol}://${req.get('host')}/uploads/packages/${record.image}`
+  record.features = JSON.parse(record.features || '[]');
+  record.image_url = record.image ? `${req.protocol}://${req.get('host')}/uploads/packages/${record.image}`
     : null;
   res.status(200).json({
     success: true,
-    data:record,
+    data: record,
   });
 });
 
@@ -592,7 +592,10 @@ exports.getPackageGallery = catchAsyncErrors(async (req, res, next) => {
   const packageId = req.params.id;
 
   const [rows] = await db.query(
-    'SELECT type, media_url FROM package_gallery WHERE package_id = ? ORDER BY created_at DESC',
+     `SELECT type, media_url 
+     FROM package_gallery 
+     WHERE package_id = ? AND type = 'image' 
+     ORDER BY created_at DESC`,
     [packageId]
   );
 
@@ -728,6 +731,308 @@ exports.updateFamilyMembers = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({ success: true, message: "Family members updated successfully" });
 });
+
+exports.createPackageTributes = catchAsyncErrors(async (req, res, next) => {
+  try {
+    // Destructure necessary fields from request body
+    const {
+      package_id,
+      full_name,
+      email,
+      relation,
+      memory_text,
+      tribute_text,
+    } = req.body;
+
+    // Handle file uploads
+    const files = req.files || {}; // Default to empty object if no files are uploaded
+
+    // Log the uploaded files for debugging
+    console.log("Uploaded Files:", files);
+
+    // Check if profile photo is uploaded, otherwise set it to null
+    const profile_photo = files.profile_photo?.[0]?.filename || null;
+
+    // Log request body for debugging
+    console.log("Request Body:", req.body);
+
+    // Insert the tribute data into the database
+    const result = await db.query(
+      `INSERT INTO package_tributes 
+       (package_id, full_name, email, relation, memory_text, profile_photo, tribute_text)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        package_id,
+        full_name,
+        email,
+        relation,
+        memory_text,
+        profile_photo,
+        tribute_text
+      ]
+    );
+
+    // Log the result of the query for debugging
+    console.log("DB Insert Result:", result);
+
+    // Respond with success message
+    return res.status(201).json({
+      success: true,
+      message: "Tribute created successfully",
+    });
+
+  } catch (error) {
+    // Log the error for debugging
+    console.error("Error during tribute creation:", error);
+
+    // Forward the error to the global error handler
+    return next(error); 
+  }
+});
+
+// exports.updatePackageTributes = catchAsyncErrors(async (req, res, next) => {
+//   const tributesId = req.params.id;
+
+//   const {
+//     package_id,
+//     full_name,
+//     email,
+//     relation,
+//     memory_text,
+//     tribute_text,
+//   } = req.body;
+
+//   const files = req.files || {};
+//   const profile_photo = files.profile_photo?.[0]?.filename || null;
+
+//   // Prepare fields and values to update
+//   const updateFields = [
+//     "package_id = ?",
+//     "full_name = ?",
+//     "email = ?",
+//     "relation = ?",
+//     "memory_text = ?",
+//     "profile_photo = ?",
+//     "tribute_text = ?",
+//   ];
+
+//   // Add photo columns if new files uploaded (optional)
+//   if (profile_photo) updateFields.push("profile_photo = ?");
+
+//   // Collect values in the same order
+//   const values = [
+//     package_id,
+//     full_name,
+//     email,
+//     relation,
+//     memory_text,
+//     tribute_text,
+//     profile_photo,
+//   ];
+
+//   if (profile_photo) values.push(profile_photo);
+
+//   values.push(tributesId);
+
+//   const sql = `UPDATE package_tributes SET ${updateFields.join(", ")} WHERE id = ?`;
+
+//   await db.query(sql, values);
+
+//   res.status(200).json({ success: true, message: "Tributes updated successfully" });
+// });
+exports.updatePackageTributes = catchAsyncErrors(async (req, res, next) => {
+  const tributesId = req.params.id;
+
+  const {
+    package_id,
+    full_name,
+    email,
+    relation,
+    memory_text,
+    tribute_text,
+  } = req.body;
+
+  const files = req.files || {};
+  const profile_photo = files.profile_photo?.[0]?.filename || null;
+
+  // Prepare update fields and values
+  const updateFields = [
+    "package_id = ?",
+    "full_name = ?",
+    "email = ?",
+    "relation = ?",
+    "memory_text = ?",
+    "tribute_text = ?",
+  ];
+
+  const values = [
+    package_id,
+    full_name,
+    email,
+    relation,
+    memory_text,
+    tribute_text,
+  ];
+
+  // Only update photo if new file is uploaded
+  if (profile_photo) {
+    updateFields.push("profile_photo = ?");
+    values.push(profile_photo);
+  }
+
+  // Add ID for WHERE clause
+  values.push(tributesId);
+
+  // Build SQL dynamically
+  const sql = `UPDATE package_tributes SET ${updateFields.join(", ")} WHERE id = ?`;
+
+  // Run update query
+  await db.query(sql, values);
+
+  // Fetch updated row
+  const [updatedRows] = await db.query("SELECT * FROM package_tributes WHERE id = ?", [tributesId]);
+
+  const updatedTribute = updatedRows[0];
+
+  // Construct base URL dynamically
+  const baseUrl = `${req.protocol}://${req.get("host")}/uploads/packages`;
+
+  // Append full image URL if profile_photo exists
+  updatedTribute.profile_photo = updatedTribute.profile_photo
+    ? `${baseUrl}/${updatedTribute.profile_photo}`
+    : null;
+
+  res.status(200).json({
+    success: true,
+    message: "Tribute updated successfully",
+    updatedTribute,
+  });
+});
+
+
+exports.apiGetAllTributes = catchAsyncErrors(async (req, res, next) => {
+  const [rows] = await db.query("SELECT * FROM package_tributes");
+
+  if (!rows.length) {
+    return res.status(404).json({ success: false, message: "No tributes found" });
+  }
+
+  const baseUrl = `${req.protocol}://${req.get("host")}/uploads/packages`;
+
+  const tributes = rows.map((tribute) => ({
+    ...tribute,
+    profile_photo: tribute.profile_photo ? `${baseUrl}/${tribute.profile_photo}` : null,
+  }));
+
+  res.status(200).json({
+    success: true,
+    count: tributes.length,
+    tributes,
+  });
+});
+
+exports.apiGetSingleTributes = catchAsyncErrors(async (req, res, next) => {
+  const id = req.params.id;
+  const [rows] = await db.query("SELECT * FROM package_tributes WHERE id = ?", [id]);
+
+  if (!rows.length) {
+    return res.status(404).json({ success: false, error: "Tributes not found" });
+  }
+
+  const tributes = rows[0];
+
+  const baseUrl = `${req.protocol}://${req.get("host")}/uploads/packages`;
+
+  tributes.profile_photo = tributes.profile_photo
+    ? `${baseUrl}/${tributes.profile_photo}`
+    : null;
+
+  res.status(200).json({ success: true, tributes });
+});
+
+
+exports.viewBiography = async (req, res) => {
+  const { packageId } = req.params;
+  const [[bioRow]] = await db.query(
+    'SELECT * FROM package_biographies WHERE package_id = ?',
+    [packageId]
+  );
+  if (!bioRow) return res.status(404).json({ success: false, message: 'Not found' });
+
+  if (bioRow.account_type === 'public') {
+    return res.json({ success: true, biography: bioRow });
+  }
+
+  // private account → check access_requests
+  const requesterEmail = req.query.email;
+  if (requesterEmail) {
+    const [[reqRow]] = await db.query(
+      'SELECT status FROM access_requests WHERE package_id = ? AND requester_email = ?',
+      [packageId, requesterEmail]
+    );
+    if (reqRow && reqRow.status === 'approved') {
+      return res.json({ success: true, biography: bioRow });
+    }
+    return res.json({ success: true, biography: null, status: reqRow ? reqRow.status : null });
+  }
+
+  res.json({ success: true, biography: null, status: null });
+};
+
+exports.requestAccess = async (req, res) => {
+  const { packageId } = req.params;
+  const { email, name } = req.body;
+
+  await db.query(
+    `INSERT INTO access_requests (package_id, requester_email, requester_name)
+     VALUES (?, ?, ?)
+     ON DUPLICATE KEY UPDATE 
+       requester_name = VALUES(requester_name),
+       status = 'pending'`,
+    [packageId, email, name]
+  );
+
+  res.json({ success: true, message: 'Request submitted, pending approval' });
+};
+
+
+exports.approveRequest = async (req, res) => {
+  const { requestId } = req.params;
+  await db.query(
+    'UPDATE access_requests SET status="approved" WHERE id = ?',
+    [requestId]
+  );
+  res.json({ success: true, message: 'Request approved' });
+};
+
+exports.getAccessRequests = async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT 
+        ar.id AS requestId,
+        ar.requester_email AS email,
+        ar.requester_name AS name,
+        ar.status
+       FROM access_requests ar
+       ORDER BY ar.created_at DESC`
+    );
+
+    const requests = rows.map((row) => ({
+      id: row.requestId,
+      name: row.name || "N/A",
+      email: row.email,
+      active: row.status === "approved",
+      requestId: row.requestId,
+    }));
+
+    res.json({ success: true, requests });
+  } catch (err) {
+    console.error("❌ Error fetching access requests:", err);
+    res.status(500).json({ success: false, message: "Server error", error: err.message });
+  }
+};
+
+
 
 function truncateText(text, maxLength) {
   if (text.length <= maxLength) return text;

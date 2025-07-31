@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const cartController = require('../contollers/cartController');
+const {getCart, addToCart, removeFromCart } = require('../contollers/cartController');
 const { isApiAuthenticatedUser } = require('../middleware/auth'); // If you want to protect the route
 
-router.post("/cart/add",isApiAuthenticatedUser, cartController.addToCart);
-router.get("/cart", isApiAuthenticatedUser, cartController.getCart);
-router.delete("/cart/delete/:cartId", isApiAuthenticatedUser, cartController.removeFromCart);
+// router.get("/cart", isApiAuthenticatedUser, getCart);
+router.get("/cart/all-cart", isApiAuthenticatedUser, getCart);
+router.post("/cart/add",isApiAuthenticatedUser, addToCart);
+router.delete("/cart/delete/:cartId", isApiAuthenticatedUser, removeFromCart);
 
 module.exports = router;

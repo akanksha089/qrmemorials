@@ -2,7 +2,7 @@ const db = require("../config/mysql_database");
 
 // Add item to cart
 exports.addToCart = async (req, res) => {
-  const user_id = req.user.id;  
+  const user_id = req.user.id;
   const { package_id, quantity } = req.body;
 
   if (!package_id || !quantity) {
@@ -35,9 +35,48 @@ exports.addToCart = async (req, res) => {
 };
 
 // Get cart items for authenticated user
+// exports.getCart = async (req, res) => {
+//   const user_id = req.user?.id;
+//   if (!user_id) return res.status(401).json({ message: 'Unauthorized: No user ID found' });
+
+//   try {
+//     const [cartItems] = await db.query(
+//       `SELECT 
+//         c.id, 
+//         c.quantity, 
+//         p.title AS package_name, 
+//         p.price,
+//         p.image AS image_url  -- Changed from p.image_url to p.image (SQL-style comment)
+//        FROM carts c 
+//        JOIN packages p ON c.package_id = p.id 
+//        WHERE c.user_id = ?`,
+//       [user_id]
+//     );
+
+//     // Process image URLs
+//     const cartItemsWithUrls = cartItems.map(item => ({
+//       ...item,
+//       image_url: item.image_url
+//         ? `${req.protocol}://${req.get('host')}/uploads/packages/${item.image_url}`
+//         : null
+//     }));
+
+//     res.json(cartItemsWithUrls);
+//   } catch (err) {
+//     console.error('Error fetching cart:', err.stack);
+//     res.status(500).json({ message: 'Server error', error: err.message });
+//   }
+// };
+
 exports.getCart = async (req, res) => {
+  console.log("==> in getCart route");
+  console.log("req.user =", req.user);
+
   const user_id = req.user?.id;
-  if (!user_id) return res.status(401).json({ message: 'Unauthorized: No user ID found' });
+  if (!user_id) {
+    console.log("User not authenticated.");
+    return res.status(401).json({ message: 'Unauthorized: No user ID found' });
+  }
 
   try {
     const [cartItems] = await db.query(
@@ -46,17 +85,18 @@ exports.getCart = async (req, res) => {
         c.quantity, 
         p.title AS package_name, 
         p.price,
-        p.image AS image_url  -- Changed from p.image_url to p.image (SQL-style comment)
+        p.image AS image_url
        FROM carts c 
        JOIN packages p ON c.package_id = p.id 
        WHERE c.user_id = ?`,
       [user_id]
     );
 
-    // Process image URLs
+    console.log("Cart Items:", cartItems);
+
     const cartItemsWithUrls = cartItems.map(item => ({
       ...item,
-      image_url: item.image_url 
+      image_url: item.image_url
         ? `${req.protocol}://${req.get('host')}/uploads/packages/${item.image_url}`
         : null
     }));
@@ -68,21 +108,22 @@ exports.getCart = async (req, res) => {
   }
 };
 
+
 // Remove item from cart
 const removeFromCart = async (req, res) => {
   try {
     // 1. Get IDs from request
     const cartItemId = parseInt(req.params.cartId);
     const userId = req.user.id; // From JWT via isApiAuthenticatedUser
-console.log("params:", req.params);
+    console.log("params:", req.params);
     // 2. Validate input
-if (!cartItemId) {
-  return res.status(400).json({
-    success: false,
-    message: "Cart item ID is missing",
-    code: "MISSING_CART_ID"
-  });
-}
+    if (!cartItemId) {
+      return res.status(400).json({
+        success: false,
+        message: "Cart item ID is missing",
+        code: "MISSING_CART_ID"
+      });
+    }
 
     // 3. Execute deletion
     const [result] = await db.query(

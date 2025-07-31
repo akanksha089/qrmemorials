@@ -22,7 +22,12 @@ const {
   createPackageEulogy,
   createFamilyMembers,
   getFamilyMembers,
-  updateFamilyMembers
+  updateFamilyMembers,
+  createPackageTributes,
+  updatePackageTributes,
+  apiGetSingleTributes,
+  apiGetAllTributes,
+  viewBiography, requestAccess, approveRequest, getAccessRequests
 } = require("../contollers/packageController");
 const { isAuthenticatedUser, authorizeRoles, isApiAuthenticatedUser } = require("../middleware/auth");
 const Model = require("../models/packageModel");
@@ -106,8 +111,23 @@ router.route("/packages/biography/update/:id").post(
   updatePackageBiography
 );
 router.post(
-  "/packages/eulogy",
+  "/packages/tributes",
+  upload.fields([
+    { name: "profile_photo", maxCount: 1 },
+  ]),
   isApiAuthenticatedUser,
+  createPackageTributes
+);
+router.route("/packages/tributes/:id").get(isApiAuthenticatedUser, apiGetSingleTributes);
+router.route("/packages/all-tributes/:packageId").get(isApiAuthenticatedUser, apiGetAllTributes);
+router.route("/packages/tributes/update/:id").post(
+  upload.fields([
+    { name: "profile_photo" }
+  ]),
+  isApiAuthenticatedUser,
+  updatePackageTributes
+);
+router.post("/packages/eulogy",isApiAuthenticatedUser,
   createPackageEulogy
 );
 router.route("/packages/eulogy/:id").get(isApiAuthenticatedUser, apiGetSingleEulogy);
@@ -120,4 +140,10 @@ router.route("/packages/gallery/:id").get(isApiAuthenticatedUser, getPackageGall
 router.post("/packages/family", isApiAuthenticatedUser, createFamilyMembers);
 router.get("/packages/family/:packageId", isApiAuthenticatedUser, getFamilyMembers);
 router.put("/packages/family/:packageId", isApiAuthenticatedUser, updateFamilyMembers);
+router.get("/access-requests", isApiAuthenticatedUser, getAccessRequests);
+
+router.get('/:packageId', isApiAuthenticatedUser, viewBiography);
+router.post('/:packageId/access-request', isApiAuthenticatedUser, requestAccess);
+router.post('/access-request/:requestId/approve', isApiAuthenticatedUser, approveRequest);
+
 module.exports = router;

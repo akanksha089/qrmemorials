@@ -25,10 +25,40 @@ Accept: application/json
 
 
 
-### Get a purchase package gallary
-GET http://localhost:4000/api/v1//packages/gallery/1
+### Get a biography
+GET http://localhost:4000/api/v1/packages/biography/1
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzUwNzY2MzI2LCJleHAiOjE3NTExOTgzMjZ9.6883WclEa_-BUOUcgS3xcpg1bVfC7Zgph7bkMhb0IJY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzUzMzQ3Nzg2LCJleHAiOjE3NTM3Nzk3ODZ9.Yrvb9k1N1NE3wM21eBodCykJmBDalJVE5Pd2WlB_lSc
+
+### Get a purchase package gallary
+GET http://localhost:4000/api/v1/packages/gallery/1
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzUzMzQ3Nzg2LCJleHAiOjE3NTM3Nzk3ODZ9.Yrvb9k1N1NE3wM21eBodCykJmBDalJVE5Pd2WlB_lSc
+
+### Get a purchase package eulogy
+GET http://localhost:4000/api/v1/packages/eulogy/1
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzUzMzQ3Nzg2LCJleHAiOjE3NTM3Nzk3ODZ9.Yrvb9k1N1NE3wM21eBodCykJmBDalJVE5Pd2WlB_lSc
+
+### Get a purchase package family
+GET http://localhost:4000/api/v1/packages/family/1
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzUzMzQ3Nzg2LCJleHAiOjE3NTM3Nzk3ODZ9.Yrvb9k1N1NE3wM21eBodCykJmBDalJVE5Pd2WlB_lSc
+
+### Get a purchase package videos
+GET http://localhost:4000/api/v1/packages/1/videos
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzUzMzQ3Nzg2LCJleHAiOjE3NTM3Nzk3ODZ9.Yrvb9k1N1NE3wM21eBodCykJmBDalJVE5Pd2WlB_lSc
+
+### Get a purchase package tributes
+GET http://localhost:4000/api/v1/packages/tributes/1
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzUxOTU3MjA3LCJleHAiOjE3NTIzODkyMDd9.8OqhxXj8gSNZbTSjEPYkCRQIxSkEbpbAHs7MSLj_18c
+
+### Get a purchase package all tributes
+GET http://localhost:4000/api/v1/packages/all-tributes/1
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzUxOTU3MjA3LCJleHAiOjE3NTIzODkyMDd9.8OqhxXj8gSNZbTSjEPYkCRQIxSkEbpbAHs7MSLj_18c
 
 ### Get a purchase package data
 GET http://localhost:4000/api/v1/purchased-packages
@@ -37,9 +67,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxN
 
 
 ### Get a cart data
-GET http://localhost:4000/api/v1/cart
+GET http://localhost:4000/api/v1/cart/all-cart
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzQ5MjEyNzI3LCJleHAiOjE3NDk2NDQ3Mjd9.iO_FddW9eyTjLErEIvQ3uxUGZdiav9E0ZA5_v5AJEf8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzUzNzg5NjcwLCJleHAiOjE3NTQyMjE2NzB9.UBccGk3YhYAIokb139DVq3Vaj1us3pwvRCrTjyaQ6HM
+
+### Get a access-requests
+GET http://localhost:4000/api/v1/access-requests
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzUzNzg5NjcwLCJleHAiOjE3NTQyMjE2NzB9.UBccGk3YhYAIokb139DVq3Vaj1us3pwvRCrTjyaQ6HM
 
 
 
@@ -85,10 +120,18 @@ Content-Type: application/json
   "confirmPassword": "12345678"
 }
 
+### Create a request for biography
+POST http://localhost:4000/api/v1/1/access-request
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzUzNzg5NjcwLCJleHAiOjE3NTQyMjE2NzB9.UBccGk3YhYAIokb139DVq3Vaj1us3pwvRCrTjyaQ6HM
+
+{ "name": "Alice Smith",
+   "email": "alice@mailinator.com"
+}
 ### Create a new cart in item
 POST http://localhost:4000/api/v1/cart/add
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzQ5MjEyNzI3LCJleHAiOjE3NDk2NDQ3Mjd9.iO_FddW9eyTjLErEIvQ3uxUGZdiav9E0ZA5_v5AJEf8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzUzNzg5NjcwLCJleHAiOjE3NTQyMjE2NzB9.UBccGk3YhYAIokb139DVq3Vaj1us3pwvRCrTjyaQ6HM
 
 {
   "package_id": "11",
