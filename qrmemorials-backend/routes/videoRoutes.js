@@ -6,6 +6,6 @@ const {  isApiAuthenticatedUser } = require("../middleware/auth");
 const upload = multer({ storage: multer.memoryStorage() }); // store file in memory
 
 router.post('/videos/upload', upload.single('video'), isApiAuthenticatedUser, uploadVideoToVimeo);
-router.get('/packages/:packageId/videos', isApiAuthenticatedUser, getPackageVideos);
+router.get('/packages/:packageId/videos',  getPackageVideos);
 
 module.exports = router;

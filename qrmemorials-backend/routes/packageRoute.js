@@ -100,7 +100,7 @@ router.post(
   isApiAuthenticatedUser,
   createPackageBiography
 );
-router.route("/packages/biography/:id").get(isApiAuthenticatedUser, apiGetSingleBiography);
+router.route("/packages/biography/:id").get( apiGetSingleBiography);
 router.route("/packages/biography/update/:id").post(
   upload.fields([
     { name: "profile_photo" },
@@ -119,7 +119,7 @@ router.post(
   createPackageTributes
 );
 router.route("/packages/tributes/:id").get(isApiAuthenticatedUser, apiGetSingleTributes);
-router.route("/packages/all-tributes/:packageId").get(isApiAuthenticatedUser, apiGetAllTributes);
+router.route("/packages/all-tributes/:packageId").get( apiGetAllTributes);
 router.route("/packages/tributes/update/:id").post(
   upload.fields([
     { name: "profile_photo" }
@@ -130,20 +130,20 @@ router.route("/packages/tributes/update/:id").post(
 router.post("/packages/eulogy",isApiAuthenticatedUser,
   createPackageEulogy
 );
-router.route("/packages/eulogy/:id").get(isApiAuthenticatedUser, apiGetSingleEulogy);
+router.route("/packages/eulogy/:id").get( apiGetSingleEulogy);
 router.route("/packages/eulogy/update/:id").post(
   isApiAuthenticatedUser,
   updatePackageEulogy
 );
 router.post('/packages/:id/gallery', uploadGallery.array('images', 10),  isApiAuthenticatedUser, uploadGalleryImages);
-router.route("/packages/gallery/:id").get(isApiAuthenticatedUser, getPackageGallery);
+router.route("/packages/gallery/:id").get( getPackageGallery);
 router.post("/packages/family", isApiAuthenticatedUser, createFamilyMembers);
-router.get("/packages/family/:packageId", isApiAuthenticatedUser, getFamilyMembers);
+router.get("/packages/family/:packageId",  getFamilyMembers);
 router.put("/packages/family/:packageId", isApiAuthenticatedUser, updateFamilyMembers);
 router.get("/access-requests", isApiAuthenticatedUser, getAccessRequests);
 
-router.get('/:packageId', isApiAuthenticatedUser, viewBiography);
-router.post('/:packageId/access-request', isApiAuthenticatedUser, requestAccess);
+router.get('/biography/:packageId',  viewBiography);
+router.post('/:packageId/access-request',  requestAccess);
 router.post('/access-request/:requestId/approve', isApiAuthenticatedUser, approveRequest);
 
 module.exports = router;

@@ -30,7 +30,7 @@ function userRequests({approveRequest, users}) {
             users.map((user, idx) => (
               <tr key={user.id} className="border-t border-gray-200 dark:border-gray-700">
                 <td className="p-4 text-gray-800 dark:text-gray-200">{idx + 1}</td>
-                <td className="p-4 text-gray-800 dark:text-gray-200">{user.name}</td>
+                <td className="p-4 text-gray-800 dark:text-gray-200 capitalize">{user.name}</td>
                 <td className="p-4 text-gray-800 dark:text-gray-200">{user.email}</td>
                 <td className="p-4">
                   {/* Switch Button */}

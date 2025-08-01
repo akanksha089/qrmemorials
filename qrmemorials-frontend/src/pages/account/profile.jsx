@@ -283,6 +283,10 @@ export default function Profile() {
 
         return `${birthDate} – ${deathDate}`;
     };
+
+    console.log('isPrivate:', isPrivate);
+console.log('accessStatus:', accessStatus);
+console.log('biography:', biography);
     return (
 
         <>
