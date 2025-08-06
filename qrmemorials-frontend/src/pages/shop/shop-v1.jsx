@@ -82,18 +82,18 @@ export default function ShopV1() {
 
             <div className="flex items-center gap-4 flex-wrap bg-overlay p-14 sm:p-16 before:bg-title before:bg-opacity-70" style={{ backgroundImage: `url(${bg})` }}>
                 <div className="text-center w-full">
-                    <h2 className="text-white text-8 md:text-[40px] font-normal leading-none text-center">Shop</h2>
+                    <h2 className="text-white text-8 md:text-[40px] font-normal leading-none text-center">Packages</h2>
                     <ul className="flex items-center justify-center gap-[10px] text-base md:text-lg leading-none font-normal text-white mt-3 md:mt-4">
                         <li><Link to="/">Home</Link></li>
                         <li>/</li>
-                        <li className="text-primary">Shop</li>
+                        <li className="text-primary">Packages</li>
                     </ul>
                 </div>
             </div>
 
             <div className="s-py-100">
                 <div className="container-fluid">
-                    <div className="flex items-start justify-between gap-8 max-w-[1720px] mx-auto flex-col lg:flex-row border-b border-bdr-clr dark:border-bdr-clr-drk pb-8 md:pb-[50px]" data-aos="fade-up" data-aos-delay="100">
+                    {/* <div className="flex items-start justify-between gap-8 max-w-[1720px] mx-auto flex-col lg:flex-row border-b border-bdr-clr dark:border-bdr-clr-drk pb-8 md:pb-[50px]" data-aos="fade-up" data-aos-delay="100">
                         <div>
                             <h4 className="font-medium leading-none text-xl sm:text-2xl mb-5 sm:mb-6">Choose Category</h4>
                             <div className="flex flex-wrap gap-[10px] md:gap-[15px]">
@@ -129,7 +129,7 @@ export default function ShopV1() {
                                 <SelectOne />
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
                     <div className="max-w-[1720px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-8 pt-8 md:pt-[50px]" data-aos="fade-up" data-aos-delay="300">
                         {packages.map((item, index) => {

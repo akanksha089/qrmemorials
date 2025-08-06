@@ -16,7 +16,7 @@ export default function SliderOne() {
                             </svg>   
                             <div className="absolute top-1/4 left-[10%] xl:left-[20%] z-30">
                                 <h4 className="leading-none text-primary dark:text-primary font-semibold">$140</h4>
-                                <h3 className="leading-none mt-4">Aurora Flexible Sofa</h3>
+                                <h3 className="leading-none mt-4"> SoulLink Package</h3>
                                 <div className="group mt-[10px]">
                                     <Link to="/product-details" className="text-lg leading-none text-title font-medium  text-underline dark:text-white">Buy Now</Link>
                                 </div>
@@ -37,14 +37,15 @@ export default function SliderOne() {
                                     <span className="font-bold text-5xl sm:text-7xl xl:text-9xl text-title leading-none dark:text-white">2025</span>
                                     <img className="-ml-5 sm:-ml-10 w-[150px] sm:w-[200px] lg:w-[250px] xl:w-full" src={img1} alt="summer"/>
                                 </div>
-                                <h2 className="mt-[10px] font-normal text-3xl sm:text-4xl xl:text-5xl !leading-[1.3] dark:text-white">Brand-New Arrival Alert Your Next Favorite is Here!</h2>
-                                <p className="dark:text-white-light mt-3 md:mt-4 sm:max-w-[450px] xl:max-w-full">Discover the latest must-have arrivals! Elevate your style with our newest collection of trendsetting items. Find your perfect fit with our diverse product. </p>
+                                <h2 className="mt-[10px] font-normal text-3xl sm:text-4xl xl:text-5xl !leading-[1.3] dark:text-white">Keeping the memory of your loved ones alive forever!</h2>
+                                <p className="dark:text-white-light mt-3 md:mt-4 sm:max-w-[450px] xl:max-w-full">Keeping the memory of loved ones alive can be a comforting and healing part of the grieving process. It allows you to celebrate their life, acknowledge the love you shared, and ensure their legacy continues  </p>
                                 <div className="button mt-4 md:mt-6">
                                     <Link className="btn btn-outline" to="/shop-v1" data-text="Shop Now"><span>Shop Now</span></Link>
                                 </div>
                             </div>
                             <div className="sm:max-w-[750px] w-full">
-                                <img className="slider-img" src={img2} alt="banner-slider"/>
+                                {/* <img className="slider-img" src={img2} alt="banner-slider"/> */}
+                                <img className="slider-img" src="https://img.freepik.com/free-psd/mother-spending-time-outdoors-with-her-daughter_23-2150114160.jpg?semt=ais_hybrid&w=740&q=80" alt="banner-slider"/>
                             </div>
                         </div>
                     </div>
@@ -59,7 +60,7 @@ export default function SliderOne() {
                             </svg>
                             <div className="absolute top-1/4 left-[10%] xl:left-[20%] z-30">
                                 <h4 className="leading-none text-[#627952] dark:text-[#627952] font-semibold">$110</h4>
-                                <h3 className="leading-none mt-4">Aurora Flexible Vase</h3>
+                                <h3 className="leading-none mt-4">SoulLink Package</h3>
                                 <div className="group mt-[10px]">
                                     <Link to="/product-details" className="text-lg leading-none text-title font-medium  text-underline dark:text-white">Buy Now</Link>
                                 </div>
@@ -80,14 +81,15 @@ export default function SliderOne() {
                                     <span className="font-bold text-5xl sm:text-7xl xl:text-9xl text-title leading-none dark:text-white">2025</span>
                                     <img className="-ml-5 sm:-ml-10 w-[150px] sm:w-[200px] lg:w-[250px] xl:w-full" src={img1} alt="summer"/>
                                 </div>
-                                <h2 className="mt-[10px] font-normal text-3xl sm:text-4xl xl:text-5xl !leading-[1.3] dark:text-white">Exciting New Arrivals Unmissable Just Landed</h2>
-                                <p className="dark:text-white-light mt-3 md:mt-4 sm:max-w-[450px] xl:max-w-full">Discover the latest must-have arrivals! Elevate your style with our newest collection of trendsetting items. Find your perfect fit with our diverse product.</p>
+                                <h2 className="mt-[10px] font-normal text-3xl sm:text-4xl xl:text-5xl !leading-[1.3] dark:text-white">Keeping the memory of your loved ones!</h2>
+                                <p className="dark:text-white-light mt-3 md:mt-4 sm:max-w-[450px] xl:max-w-full">Memory allows you to celebrate their life, acknowledge the love you shared, and ensure their legacy continues.</p>
                                 <div className="button mt-4 md:mt-6">
                                     <Link className="btn btn-outline" to="/shop-v2" data-text="Shop Now"><span>Shop Now</span></Link>
                                 </div>
                             </div>
                             <div className="sm:max-w-[750px] w-full">
-                                <img className="slider-img" src={img3} alt="banner-slider"/>
+                                {/* <img className="slider-img" src={img3} alt="banner-slider"/> */}
+                                <img className="slider-img" src="https://img.freepik.com/free-photo/mother-giving-piggyback-ride_23-2148500089.jpg?semt=ais_hybrid&w=740&q=80" alt="banner-slider"/>
                             </div>
                         </div>
                     </div>

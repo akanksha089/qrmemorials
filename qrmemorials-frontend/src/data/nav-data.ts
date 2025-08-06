@@ -66,24 +66,24 @@ export const cartList = [
 
 export const footerLink1 = [
     {
+        name:'Home',
+        link:'/'
+    },
+    {
         name:'About',
         link:'/about'
     },
     {
-        name:'Team',
-        link:'/team'
+        name:'Packages',
+        link:'/shop-v1'
     },
     {
-        name:'Portfolio',
-        link:'/portfolio-v1'
+        name:'Blog',
+        link:'/blog-v1  '
     },
     {
-        name:'Clients',
-        link:'/our-clients'
-    },
-    {
-        name:'Error',
-        link:'/error'
+        name:'Contact',
+        link:'/contact'
     },
 ]
 export const footerLink2 = [
@@ -128,19 +128,16 @@ export const footerLink3 = [
 ]
 export const footerLink4 = [
     {
-        name:'FAQs',
-        link:'/faq'
+        name:'Email : info@soullink.com',
+        link:'/info@soullink.com'
     },
     {
-        name:'Terms & Condition',
-        link:'/terms-and-conditions'
-    },
-    {
-        name:'Return Policy',
+        name:'Phone : +91 420 286 863',
         link:'/'
     },
     {
-        name:'Contact',
-        link:'/contact'
+        name:'Address : Macquire Links, NSW, 2565, Australia.',
+        link:'/'
     },
+   
 ]

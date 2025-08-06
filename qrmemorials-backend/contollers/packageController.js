@@ -7,6 +7,7 @@ const db = require("../config/mysql_database");
 const Joi = require("joi");
 const { htmlToText } = require("html-to-text");
 const { format } = require("date-fns");
+const crypto = require('crypto');
 
 const table_name = Model.table_name;
 const module_title = Model.module_title;
@@ -15,6 +16,11 @@ const module_add_text = Model.module_add_text;
 const module_edit_text = Model.module_edit_text;
 const module_slug = Model.module_slug;
 const module_layout = Model.module_layout;
+
+// Function to generate secure access_id
+const generateAccessId = () => {
+  return crypto.randomBytes(16).toString('hex'); // e.g., "a3bd4e9f8c3a24..."
+};
 
 // ADD FORM
 exports.addFrom = catchAsyncErrors(async (req, res, next) => {
@@ -951,33 +957,84 @@ exports.apiGetSingleTributes = catchAsyncErrors(async (req, res, next) => {
 });
 
 
+// exports.viewBiography = async (req, res) => {
+//   const { packageId } = req.params;
+//   const [[bioRow]] = await db.query(
+//     'SELECT * FROM package_biographies WHERE package_id = ?',
+//     [packageId]
+//   );
+//   if (!bioRow) return res.status(404).json({ success: false, message: 'Not found' });
+
+//   if (bioRow.account_type === 'public') {
+//     return res.json({ success: true, biography: bioRow });
+//   }
+
+//   // private account → check access_requests
+//   const requesterEmail = req.query.email;
+//   if (requesterEmail) {
+//     const [[reqRow]] = await db.query(
+//       'SELECT status FROM access_requests WHERE package_id = ? AND requester_email = ?',
+//       [packageId, requesterEmail]
+//     );
+//     if (reqRow && reqRow.status === 'approved') {
+//       return res.json({ success: true, biography: bioRow });
+//     }
+//     return res.json({ success: true, biography: null, status: reqRow ? reqRow.status : null });
+//   }
+
+//   res.json({ success: true, biography: null, status: null });
+// };
+
+
 exports.viewBiography = async (req, res) => {
   const { packageId } = req.params;
+  const accessId = req.query.access_id?.trim();
+  const requesterEmail = req.query.email?.trim().toLowerCase();
+
   const [[bioRow]] = await db.query(
     'SELECT * FROM package_biographies WHERE package_id = ?',
     [packageId]
   );
-  if (!bioRow) return res.status(404).json({ success: false, message: 'Not found' });
 
+  if (!bioRow) {
+    return res.status(404).json({ success: false, message: 'Not found' });
+  }
+
+  const ownerEmail = bioRow.owner_email?.trim().toLowerCase();
+
+  // ✅ Allow if profile is public
   if (bioRow.account_type === 'public') {
     return res.json({ success: true, biography: bioRow });
   }
 
-  // private account → check access_requests
-  const requesterEmail = req.query.email;
-  if (requesterEmail) {
-    const [[reqRow]] = await db.query(
-      'SELECT status FROM access_requests WHERE package_id = ? AND requester_email = ?',
-      [packageId, requesterEmail]
-    );
-    if (reqRow && reqRow.status === 'approved') {
-      return res.json({ success: true, biography: bioRow });
-    }
-    return res.json({ success: true, biography: null, status: reqRow ? reqRow.status : null });
+  // ✅ Allow if requester is the owner
+  if (requesterEmail && requesterEmail === ownerEmail) {
+    return res.json({ success: true, biography: bioRow });
   }
 
-  res.json({ success: true, biography: null, status: null });
+  // ✅ Allow if access_id is valid
+  if (accessId) {
+    const [[accessRow]] = await db.query(
+      'SELECT status FROM access_requests WHERE package_id = ? AND access_id = ?',
+      [packageId, accessId]
+    );
+
+    if (accessRow?.status === 'approved') {
+      return res.json({ success: true, biography: bioRow });
+    }
+
+    return res.json({
+      success: true,
+      biography: null,
+      status: accessRow?.status || null
+    });
+  }
+
+  // ❌ Not allowed — no access
+  return res.json({ success: true, biography: null, status: null });
 };
+
+
 
 exports.requestAccess = async (req, res) => {
   const { packageId } = req.params;
@@ -998,11 +1055,21 @@ exports.requestAccess = async (req, res) => {
 
 exports.approveRequest = async (req, res) => {
   const { requestId } = req.params;
+    // Generate a unique access_id token
+  const accessId = generateAccessId();
+
+  // Update the access request: set status to approved and save the access_id
   await db.query(
-    'UPDATE access_requests SET status="approved" WHERE id = ?',
-    [requestId]
+    `UPDATE access_requests 
+     SET status = 'approved', access_id = ? 
+     WHERE id = ?`,
+    [accessId, requestId]
   );
-  res.json({ success: true, message: 'Request approved' });
+  res.json({
+    success: true,
+    message: 'Request approved',
+    access_id: accessId,  // return token so frontend can send or display
+  });
 };
 
 exports.getAccessRequests = async (req, res) => {
@@ -1012,7 +1079,8 @@ exports.getAccessRequests = async (req, res) => {
         ar.id AS requestId,
         ar.requester_email AS email,
         ar.requester_name AS name,
-        ar.status
+        ar.status,
+        ar.access_id
        FROM access_requests ar
        ORDER BY ar.created_at DESC`
     );
@@ -1022,7 +1090,7 @@ exports.getAccessRequests = async (req, res) => {
       name: row.name || "N/A",
       email: row.email,
       active: row.status === "approved",
-      requestId: row.requestId,
+      accessId: row.access_id || null,   // include access_id here
     }));
 
     res.json({ success: true, requests });
@@ -1031,6 +1099,7 @@ exports.getAccessRequests = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error", error: err.message });
   }
 };
+
 
 
 

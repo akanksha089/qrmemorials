@@ -97,34 +97,34 @@ import shop09 from '../assets/img/gallery/shop-04/shop-09.jpg'
 
 export const categoryOne = [
     {
-        image:ct1,
-        item:'5 items',
-        name:'New Seat Tools'
+        image:"https://img.freepik.com/free-vector/obituary-background-design_23-2151254324.jpg?semt=ais_hybrid&w=740",
+         item:'5 items',
+        name:'A Personalized Digital Tribute'
     },
     {
-        image:ct2,
+        image:"https://img.freepik.com/free-vector/obituary-template-design_23-2151190734.jpg?semt=ais_hybrid&w=740",
         item:'13 items',
-        name:'New Seat Tools'
+        name:'Timeless Tribute'
     },
     {
-        image:ct3,
+        image:"https://img.freepik.com/premium-vector/obituary-background-design_23-2151254321.jpg?semt=ais_hybrid&w=740&q=80",
         item:'23 items',
-        name:'New Seat Tools'
+        name:'Digital Legacy'
     },
     {
-        image:ct1,
+        image:"https://img.freepik.com/free-vector/obituary-background-design_23-2151254324.jpg?semt=ais_hybrid&w=740",
         item:'5 items',
-        name:'New Seat Tools'
+        name:'Keeping Memories Alive'
     },
     {
-        image:ct2,
+        image:"https://img.freepik.com/free-vector/obituary-template-design_23-2151190734.jpg?semt=ais_hybrid&w=740",
         item:'13 items',
-        name:'New Seat Tools'
+        name:'Digital Memorials'
     },
     {
-        image:ct3,
+        image:"https://img.freepik.com/premium-vector/obituary-background-design_23-2151254321.jpg?semt=ais_hybrid&w=740&q=80",
         item:'23 items',
-        name:'New Seat Tools'
+        name:'Eternal Remembrance'
     },
     
 ]
@@ -219,23 +219,23 @@ export const productList = [
 export const featureOne = [
     {
         image:fea1,
-        title:'Free Shipping',
-        desc:'Enjoy free shipping on all orders, making your shopping experience even more convenient. Get your favorite products delivered.'
+        title:'Purchase Your Plaque',
+        desc:'Make a one-time purchase with no ongoing fees. We’ll engrave your loved one’s name and a unique QR code on a durable stainless steel plaque, then ship it to your door worldwide.'
     },
     {
         image:fea2,
-        title:'Easy to Return',
-        desc:`Experience hassle-free returns with our easy-to-use return policy. If you're not satisfied, simply return your product for a quick.`
+        title:'Create a Digital Memorial',
+        desc:`Once you receive your plaque, visit our website to create a digital memorial page. This page can include photos, videos, stories, and other memories of your loved one.`
     },
     {
         image:fea3,
-        title:'Secure Payment',
-        desc:`Shop with confidence using our secure payment options, ensuring your personal information stays protected. We prioritize your safety.`
+        title:'Easy Installation',
+        desc:`Include a QR code on the plaque that links to the digital memorial page. This allows anyone who scans the code to access the memorial and share their own memories.`
     },
     {
         image:fea4,
-        title:`Customer Support`,
-        desc:`Our dedicated customer support team is here to assist you every step of the way. Reach out to us anytime for prompt, friendly help.`
+        title:`Remember and Share`,
+        desc:`Your loved one’s memory can be shared with family and friends, and the digital memorial can be updated over time with new memories, photos, and stories.`
     },
     {
         image:fea5,

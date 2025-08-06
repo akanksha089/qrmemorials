@@ -31,7 +31,7 @@ export default function Profile() {
     const [error, setError] = useState(null);
     const [isPrivate, setIsPrivate] = useState(false);
     const [accessStatus, setAccessStatus] = useState(null); // 'approved', 'pending', null
-    const [email, setEmail] = useState('');
+    const [emailUser, setEmailUser] = useState('');
     const [name, setName] = useState('');
     const [formData, setFormData] = useState({
         package_id: "",
@@ -45,6 +45,10 @@ export default function Profile() {
     const [isModalOpen, setModalOpen] = useState(false);
     const userToken = getUserData();
     const token = userToken.token;
+    const user = getUserData(); // from localStorage
+    const userEmail = user?.email?.trim().toLowerCase();
+
+    const accessId = new URLSearchParams(window.location.search).get("access_id");
 
     useEffect(() => {
         Aos.init()
@@ -173,7 +177,10 @@ export default function Profile() {
         const fetchData = async () => {
             try {
                 const response = await axios.get(`${API_BASE_URL}/api/v1/biography/${packageId}`, {
-                    params: { email }
+                    params: {
+                        email: userEmail,
+                        access_id: accessId,
+                    },
                 });
 
                 if (response.data.biography) {
@@ -190,7 +197,7 @@ export default function Profile() {
         };
 
         fetchData();
-    }, [packageId, email]);
+    }, [packageId, userEmail, accessId]);
 
     const tabs = [
         { id: "page1", label: "About" },
@@ -265,10 +272,10 @@ export default function Profile() {
     };
 
     const handleAccessRequest = async () => {
-         if (!email || !name) return;
+        if (!email || !name) return;
 
         try {
-            axios.post(`${API_BASE_URL}/api/v1/${packageId}/access-request`, { email , name,})
+            axios.post(`${API_BASE_URL}/api/v1/${packageId}/access-request`, { email, name, })
             setAccessStatus('pending');
         } catch (err) {
             console.error('Request failed', err);
@@ -285,8 +292,8 @@ export default function Profile() {
     };
 
     console.log('isPrivate:', isPrivate);
-console.log('accessStatus:', accessStatus);
-console.log('biography:', biography);
+    console.log('accessStatus:', accessStatus);
+    console.log('biography:', biography);
     return (
 
         <>
@@ -311,8 +318,8 @@ console.log('biography:', biography);
                                 />
                                 <input
                                     type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    value={emailUser}
+                                    onChange={(e) => setEmailUser(e.target.value)}
                                     placeholder="you@example.com"
                                     className="w-full p-2 border border-gray-300 rounded mb-4 focus:outline-none focus:ring focus:ring-primary"
                                 />
