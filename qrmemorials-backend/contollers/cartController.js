@@ -69,8 +69,6 @@ exports.addToCart = async (req, res) => {
 // };
 
 exports.getCart = async (req, res) => {
-  console.log("==> in getCart route");
-  console.log("req.user =", req.user);
 
   const user_id = req.user?.id;
   if (!user_id) {
@@ -92,7 +90,6 @@ exports.getCart = async (req, res) => {
       [user_id]
     );
 
-    console.log("Cart Items:", cartItems);
 
     const cartItemsWithUrls = cartItems.map(item => ({
       ...item,

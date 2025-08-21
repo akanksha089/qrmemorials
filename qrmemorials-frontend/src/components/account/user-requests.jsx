@@ -2,12 +2,12 @@
 function userRequests({approveRequest, users}) {
 
   
-  const toggleActive = (id) => {
-    const user = users.find((u) => u.id === id);
-    if (!user.active) {
-      approveRequest(user.requestId);
-    }
-  };
+const toggleActive = (requestId) => {
+  const user = users.find((u) => u.id === requestId); // ✅ user.id is requestId
+  if (!user?.active) {
+    approveRequest(requestId);
+  }
+};
 
   return (
     <div className="w-full dark:bg-dark-secondary p-5 sm:p-8 lg:p-[50px]">
@@ -23,6 +23,7 @@ function userRequests({approveRequest, users}) {
               <th className="p-4 border border-gray-200 dark:border-gray-700">Name</th>
               <th className="p-4 border border-gray-200 dark:border-gray-700">Email</th>
               <th className="p-4 border border-gray-200 dark:border-gray-700">Active</th>
+              <th className="p-4 border border-gray-200 dark:border-gray-700">Access ID</th>
             </tr>
           </thead>
           <tbody>
@@ -34,18 +35,21 @@ function userRequests({approveRequest, users}) {
                 <td className="p-4 text-gray-800 dark:text-gray-200">{user.email}</td>
                 <td className="p-4">
                   {/* Switch Button */}
-                  <label htmlFor={`switch-${user.id}`} className="inline-flex relative items-center cursor-pointer">
+                  <label  htmlFor={`switch-${user.id}`} className="inline-flex relative items-center cursor-pointer">
                     <input
                       type="checkbox"
                       id={`switch-${user.id}`}
                       className="sr-only peer"
                       checked={user.active}
-                      onChange={() => toggleActive(user.id)}
+                     onChange={() => toggleActive(user.id)} 
                     />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-600 transition-all duration-300"></div>
                     <div className="absolute left-1 top-1 bg-white w-4 h-4 rounded-full shadow transform peer-checked:translate-x-full transition-transform duration-300"></div>
                   </label>
                 </td>
+                  <td className="p-4 text-gray-600 dark:text-gray-300 break-all">
+                    {user.active && user.accessId ? user.accessId : "-"}
+                  </td>
               </tr>
             )) : 
             <tr>

@@ -470,7 +470,9 @@ const MyPackages = () => {
             if (data.success) {
                 setUsers((prev) =>
                     prev.map((user) =>
-                        user.requestId === requestId ? { ...user, active: true } : user
+                        user.id === requestId
+                            ? { ...user, active: true, accessId: data.access_id }
+                            : user
                     )
                 );
                 toast.success("Request approved successfully ✅");
@@ -481,7 +483,6 @@ const MyPackages = () => {
             console.error("Approval error:", err);
         }
     };
-
 
     return (
         <>
@@ -557,6 +558,7 @@ const MyPackages = () => {
                                 />}
                                 {activeTab === "QR Code" && <QRCodeTab
                                     packageId={packageId}
+                                    accessId={users.find(user => user.active)?.accessId || null}
                                 />}
                             </div>
 

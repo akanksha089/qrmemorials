@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import NavbarOne from "../../components/navbar/navbar-one";
 import bg from '../../assets/img/bg/soul-default-background-new.png'
@@ -13,7 +13,7 @@ import Eulogy from '../../components/profile/eulogy';
 import Family from '../../components/profile/family';
 import GraveLocation from '../../components/profile/graveLocation'
 import TributeModal from "../../components/profile/TributeModal ";
-import { API_BASE_URL } from '../../config';
+import { API_BASE_URL, WEB_BASE_URL } from '../../config';
 import { getUserData } from '../../utility/auth'
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -43,13 +43,16 @@ export default function Profile() {
     });
     const [profilePhoto, setProfilePhoto] = useState(null);
     const [isModalOpen, setModalOpen] = useState(false);
-    const userToken = getUserData();
-    const token = userToken.token;
-    const user = getUserData(); // from localStorage
+    const data = getUserData(); // entire object from localStorage
+    const token = data?.token;
+    const user = data?.user;
     const userEmail = user?.email?.trim().toLowerCase();
 
     const accessId = new URLSearchParams(window.location.search).get("access_id");
 
+
+    const location = useLocation();
+    console.log('accessId', accessId)
     useEffect(() => {
         Aos.init()
     })
@@ -59,6 +62,8 @@ export default function Profile() {
             setFormData((prev) => ({ ...prev, package_id: packageId }));
         }
     }, [packageId]);
+
+
     useEffect(() => {
         const fetchBiography = async () => {
             try {
@@ -173,31 +178,102 @@ export default function Profile() {
         fetchBiography(); fetchPhotos(); fetchTributes(); fetchEulogy(); fetchFamily(); fetchVideos();
     }, [packageId]);
 
+
+
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         const emailToUse = userEmail || emailUser;
+
+    //         try {
+    //             const res = await axios.get(`${API_BASE_URL}/api/v1/biography/${packageId}`, {
+    //                 params: {
+    //                     email: emailToUse,
+    //                     ...(accessId && { access_id: accessId }),
+    //                 },
+    //             });
+
+    //             const { biography, status, ownerEmail } = res.data;
+    //             const isOwner = userEmail && userEmail === ownerEmail?.toLowerCase();
+
+    //             if (!isOwner && !accessId && !biography) {
+    //                 setBiography(null);
+    //                 setIsPrivate(true);
+    //                 setAccessStatus(status || "unauthorized");
+    //                 return;
+    //             }
+
+    //             if (biography) {
+    //                 setBiography(biography);
+    //                 setIsPrivate(false);
+    //                 setAccessStatus("approved");
+    //             } else {
+    //                 setBiography(null);
+    //                 setIsPrivate(true);
+    //                 setAccessStatus(status || "pending");
+    //             }
+
+    //         } catch (err) {
+    //             console.error("❌ Error fetching biography:", err);
+    //             setBiography(null);
+    //             setIsPrivate(true);
+    //             setAccessStatus("error");
+    //         }
+    //     };
+
+    //     fetchData();
+    // }, [packageId, userEmail, accessId, emailUser]);
+
+
+
     useEffect(() => {
         const fetchData = async () => {
+            const params = new URLSearchParams(location.search);
+            const emailFromUrl = params.get("email");
+
+            const emailToUse = userEmail || emailUser || emailFromUrl;
+
             try {
-                const response = await axios.get(`${API_BASE_URL}/api/v1/biography/${packageId}`, {
+                const res = await axios.get(`${API_BASE_URL}/api/v1/biography/${packageId}`, {
                     params: {
-                        email: userEmail,
-                        access_id: accessId,
+                        email: emailToUse,
+                        ...(accessId && { access_id: accessId }),
                     },
                 });
 
-                if (response.data.biography) {
-                    setBiography(response.data.biography);
+                const { biography, status, ownerEmail } = res.data;
+                const isOwner = userEmail && userEmail === ownerEmail?.toLowerCase();
+
+                if (!isOwner && !accessId && !biography) {
+                    setBiography(null);
+                    setIsPrivate(true);
+                    setAccessStatus(status || "unauthorized");
+                    return;
+                }
+
+                if (biography) {
+                    setBiography(biography);
                     setIsPrivate(false);
+                    setAccessStatus("approved");
                 } else {
                     setBiography(null);
                     setIsPrivate(true);
-                    setAccessStatus(response.data.status); // null | pending | approved
+                    setAccessStatus(status || "pending");
                 }
+
             } catch (err) {
-                console.error(err);
+                console.error("❌ Error fetching biography:", err);
+                setBiography(null);
+                setIsPrivate(true);
+                setAccessStatus("error");
             }
         };
 
         fetchData();
-    }, [packageId, userEmail, accessId]);
+    }, [packageId, userEmail, accessId, emailUser, location.search]);
+
+
+
+
 
     const tabs = [
         { id: "page1", label: "About" },
@@ -271,16 +347,36 @@ export default function Profile() {
         }
     };
 
+
+
     const handleAccessRequest = async () => {
-        if (!email || !name) return;
+        if (!emailUser || !name) {
+            toast.error("Name and email are required.");
+            return;
+        }
 
         try {
-            axios.post(`${API_BASE_URL}/api/v1/${packageId}/access-request`, { email, name, })
-            setAccessStatus('pending');
+            const response = await axios.post(`${API_BASE_URL}/api/v1/${packageId}/access-request`, {
+                email: emailUser,
+                name
+            });
+
+            // ✅ Success
+            if (response.data.success) {
+                setAccessStatus('pending');
+                toast.success(response.data.message || "Request submitted successfully!");
+            }
+
         } catch (err) {
             console.error('Request failed', err);
+
+            const errorMessage =
+                err.response?.data?.message || "Something went wrong. Please try again.";
+
+            toast.error(errorMessage); // ❌ Show error as toast
         }
     };
+
 
     const formatDateRange = (birthDateStr, deathDateStr) => {
         const options = { year: 'numeric', month: 'short', day: '2-digit' };
@@ -293,7 +389,7 @@ export default function Profile() {
 
     console.log('isPrivate:', isPrivate);
     console.log('accessStatus:', accessStatus);
-    console.log('biography:', biography);
+
     return (
 
         <>

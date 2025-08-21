@@ -8,6 +8,7 @@ const Joi = require("joi");
 const { htmlToText } = require("html-to-text");
 const { format } = require("date-fns");
 const crypto = require('crypto');
+const sendEmail = require('../utils/sendEmail'); // make sure path is correct
 
 const table_name = Model.table_name;
 const module_title = Model.module_title;
@@ -598,7 +599,7 @@ exports.getPackageGallery = catchAsyncErrors(async (req, res, next) => {
   const packageId = req.params.id;
 
   const [rows] = await db.query(
-     `SELECT type, media_url 
+    `SELECT type, media_url 
      FROM package_gallery 
      WHERE package_id = ? AND type = 'image' 
      ORDER BY created_at DESC`,
@@ -792,60 +793,10 @@ exports.createPackageTributes = catchAsyncErrors(async (req, res, next) => {
     console.error("Error during tribute creation:", error);
 
     // Forward the error to the global error handler
-    return next(error); 
+    return next(error);
   }
 });
 
-// exports.updatePackageTributes = catchAsyncErrors(async (req, res, next) => {
-//   const tributesId = req.params.id;
-
-//   const {
-//     package_id,
-//     full_name,
-//     email,
-//     relation,
-//     memory_text,
-//     tribute_text,
-//   } = req.body;
-
-//   const files = req.files || {};
-//   const profile_photo = files.profile_photo?.[0]?.filename || null;
-
-//   // Prepare fields and values to update
-//   const updateFields = [
-//     "package_id = ?",
-//     "full_name = ?",
-//     "email = ?",
-//     "relation = ?",
-//     "memory_text = ?",
-//     "profile_photo = ?",
-//     "tribute_text = ?",
-//   ];
-
-//   // Add photo columns if new files uploaded (optional)
-//   if (profile_photo) updateFields.push("profile_photo = ?");
-
-//   // Collect values in the same order
-//   const values = [
-//     package_id,
-//     full_name,
-//     email,
-//     relation,
-//     memory_text,
-//     tribute_text,
-//     profile_photo,
-//   ];
-
-//   if (profile_photo) values.push(profile_photo);
-
-//   values.push(tributesId);
-
-//   const sql = `UPDATE package_tributes SET ${updateFields.join(", ")} WHERE id = ?`;
-
-//   await db.query(sql, values);
-
-//   res.status(200).json({ success: true, message: "Tributes updated successfully" });
-// });
 exports.updatePackageTributes = catchAsyncErrors(async (req, res, next) => {
   const tributesId = req.params.id;
 
@@ -956,82 +907,87 @@ exports.apiGetSingleTributes = catchAsyncErrors(async (req, res, next) => {
   res.status(200).json({ success: true, tributes });
 });
 
-
-// exports.viewBiography = async (req, res) => {
-//   const { packageId } = req.params;
-//   const [[bioRow]] = await db.query(
-//     'SELECT * FROM package_biographies WHERE package_id = ?',
-//     [packageId]
-//   );
-//   if (!bioRow) return res.status(404).json({ success: false, message: 'Not found' });
-
-//   if (bioRow.account_type === 'public') {
-//     return res.json({ success: true, biography: bioRow });
-//   }
-
-//   // private account → check access_requests
-//   const requesterEmail = req.query.email;
-//   if (requesterEmail) {
-//     const [[reqRow]] = await db.query(
-//       'SELECT status FROM access_requests WHERE package_id = ? AND requester_email = ?',
-//       [packageId, requesterEmail]
-//     );
-//     if (reqRow && reqRow.status === 'approved') {
-//       return res.json({ success: true, biography: bioRow });
-//     }
-//     return res.json({ success: true, biography: null, status: reqRow ? reqRow.status : null });
-//   }
-
-//   res.json({ success: true, biography: null, status: null });
-// };
-
-
 exports.viewBiography = async (req, res) => {
-  const { packageId } = req.params;
-  const accessId = req.query.access_id?.trim();
-  const requesterEmail = req.query.email?.trim().toLowerCase();
+  try {
+    const { packageId } = req.params;
+    const accessId = req.query.access_id?.trim();
+    const requesterEmail = req.query.email?.trim().toLowerCase();
 
-  const [[bioRow]] = await db.query(
-    'SELECT * FROM package_biographies WHERE package_id = ?',
-    [packageId]
-  );
+    console.log('REQUEST for packageId:', packageId);
+    console.log('Requester email:', requesterEmail);
+    console.log('Access ID:', accessId);
 
-  if (!bioRow) {
-    return res.status(404).json({ success: false, message: 'Not found' });
-  }
-
-  const ownerEmail = bioRow.owner_email?.trim().toLowerCase();
-
-  // ✅ Allow if profile is public
-  if (bioRow.account_type === 'public') {
-    return res.json({ success: true, biography: bioRow });
-  }
-
-  // ✅ Allow if requester is the owner
-  if (requesterEmail && requesterEmail === ownerEmail) {
-    return res.json({ success: true, biography: bioRow });
-  }
-
-  // ✅ Allow if access_id is valid
-  if (accessId) {
-    const [[accessRow]] = await db.query(
-      'SELECT status FROM access_requests WHERE package_id = ? AND access_id = ?',
-      [packageId, accessId]
+    // ✅ Join with users to get owner email
+    const [[bioRow]] = await db.query(
+      `
+      SELECT 
+        pb.*, 
+        u.email AS owner_email 
+      FROM package_biographies pb
+      JOIN users u ON pb.owner_id = u.id
+      WHERE pb.package_id = ?
+      `,
+      [packageId]
     );
 
-    if (accessRow?.status === 'approved') {
-      return res.json({ success: true, biography: bioRow });
+    if (!bioRow) {
+      console.log('No biography found');
+      return res.status(404).json({ success: false, message: 'Biography not found' });
     }
 
+    const ownerEmail = bioRow.owner_email?.trim().toLowerCase();
+    const isPrivate = bioRow.account_type === 'private';
+
+    console.log('Owner email from DB:', ownerEmail);
+    console.log('Is private:', isPrivate);
+
+    // ✅ Owner access
+    if (requesterEmail && requesterEmail === ownerEmail) {
+      console.log('Access granted: OWNER');
+      return res.json({ success: true, biography: bioRow, ownerEmail });
+    }
+
+    // ✅ Public profile
+    if (!isPrivate) {
+      console.log('Access granted: PUBLIC');
+      return res.json({ success: true, biography: bioRow, ownerEmail });
+    }
+
+    // ✅ Access with accessId
+    if (accessId && requesterEmail) {
+      const [[accessRow]] = await db.query(
+        `SELECT status FROM access_requests WHERE package_id = ? AND access_id = ? AND requester_email = ?`,
+        [packageId, accessId, requesterEmail]
+      );
+
+      console.log('Access request status:', accessRow?.status);
+
+      if (accessRow?.status === 'approved') {
+        console.log('Access granted: APPROVED ACCESS_ID');
+        return res.json({ success: true, biography: bioRow, ownerEmail });
+      }
+
+      console.log('Access denied: ACCESS_ID not approved');
+      return res.json({
+        success: true,
+        biography: null,
+        status: accessRow?.status || null,
+        ownerEmail,
+      });
+    }
+
+    // ❌ Block all other access
+    console.log('Access denied: NO ACCESS');
     return res.json({
       success: true,
       biography: null,
-      status: accessRow?.status || null
+      status: null,
+      ownerEmail,
     });
+  } catch (err) {
+    console.error('Error in viewBiography:', err);
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
-
-  // ❌ Not allowed — no access
-  return res.json({ success: true, biography: null, status: null });
 };
 
 
@@ -1040,36 +996,116 @@ exports.requestAccess = async (req, res) => {
   const { packageId } = req.params;
   const { email, name } = req.body;
 
-  await db.query(
-    `INSERT INTO access_requests (package_id, requester_email, requester_name)
-     VALUES (?, ?, ?)
-     ON DUPLICATE KEY UPDATE 
-       requester_name = VALUES(requester_name),
-       status = 'pending'`,
-    [packageId, email, name]
-  );
+  try {
+    // Check if a request already exists
+    const [[existing]] = await db.query(
+      `SELECT * FROM access_requests WHERE package_id = ? AND requester_email = ?`,
+      [packageId, email.trim().toLowerCase()]
+    );
 
-  res.json({ success: true, message: 'Request submitted, pending approval' });
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message: 'You have already submitted a request.',
+      });
+    }
+
+    // Insert new request
+    await db.query(
+      `INSERT INTO access_requests (package_id, requester_email, requester_name)
+       VALUES (?, ?, ?)`,
+      [packageId, email.trim().toLowerCase(), name]
+    );
+
+    return res.json({
+      success: true,
+      message: 'Request submitted, pending approval.',
+    });
+
+  } catch (err) {
+    console.error('Error submitting access request:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: err.message,
+    });
+  }
 };
-
 
 exports.approveRequest = async (req, res) => {
   const { requestId } = req.params;
-    // Generate a unique access_id token
-  const accessId = generateAccessId();
 
-  // Update the access request: set status to approved and save the access_id
-  await db.query(
-    `UPDATE access_requests 
-     SET status = 'approved', access_id = ? 
-     WHERE id = ?`,
-    [accessId, requestId]
-  );
-  res.json({
-    success: true,
-    message: 'Request approved',
-    access_id: accessId,  // return token so frontend can send or display
-  });
+  try {
+    // 1. Get requester info
+    const [existingRows] = await db.query(
+      `SELECT * FROM access_requests WHERE id = ?`,
+      [requestId]
+    );
+
+    if (existingRows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Request not found",
+      });
+    }
+
+    const requesterEmail = existingRows[0].requester_email;
+    const requesterName = existingRows[0].requester_name;
+    const packageId = existingRows[0].package_id;
+
+    if (!requesterEmail) {
+      return res.status(400).json({
+        success: false,
+        message: "No email found for the requester.",
+      });
+    }
+
+    // 2. Generate Access ID
+    const accessId = generateAccessId();
+
+    // 3. Update DB
+    const [result] = await db.query(
+      `UPDATE access_requests SET status = 'approved', access_id = ? WHERE id = ? LIMIT 1`,
+      [accessId, requestId]
+    );
+
+    // 4. Send email using your utility
+    // const profileURL = `http://localhost:5173/profile/${packageId}?access_id=${accessId}&email=${requesterEmail}`;
+    const profileURL = `https://soul-link-ten.vercel.app/profile/${packageId}?access_id=${accessId}&email=${requesterEmail}`;
+
+    await sendEmail({
+      email: requesterEmail,
+      subject: "Your Access Request is Approved",
+      message: `
+Hi ${requesterName || 'there'},
+
+Great news! Your request to access **Soul Link** has been approved.
+
+You can now explore the profile by clicking the link below:
+👉 ${profileURL}
+
+We’re excited to have you on board and look forward to the connections you’ll make.
+
+If you have any questions or need assistance, feel free to reach out.
+
+Warm regards,  
+**The Soul Link Team**
+`
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Request approved and email sent",
+      access_id: accessId,
+    });
+  } catch (error) {
+    console.error("Error approving request:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
 };
 
 exports.getAccessRequests = async (req, res) => {
@@ -1105,7 +1141,7 @@ exports.getAccessRequests = async (req, res) => {
 
 function truncateText(text, maxLength) {
   if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength) + "..."; 
+  return text.slice(0, maxLength) + "...";
 }
 
 function formatDate(dateString) {
