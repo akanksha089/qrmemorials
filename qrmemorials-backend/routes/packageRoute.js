@@ -115,7 +115,7 @@ router.post(
   upload.fields([
     { name: "profile_photo", maxCount: 1 },
   ]),
-  isApiAuthenticatedUser,
+  // isApiAuthenticatedUser,
   createPackageTributes
 );
 router.route("/packages/tributes/:id").get(isApiAuthenticatedUser, apiGetSingleTributes);
