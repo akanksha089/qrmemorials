@@ -34,39 +34,7 @@ exports.addToCart = async (req, res) => {
   }
 };
 
-// Get cart items for authenticated user
-// exports.getCart = async (req, res) => {
-//   const user_id = req.user?.id;
-//   if (!user_id) return res.status(401).json({ message: 'Unauthorized: No user ID found' });
 
-//   try {
-//     const [cartItems] = await db.query(
-//       `SELECT 
-//         c.id, 
-//         c.quantity, 
-//         p.title AS package_name, 
-//         p.price,
-//         p.image AS image_url  -- Changed from p.image_url to p.image (SQL-style comment)
-//        FROM carts c 
-//        JOIN packages p ON c.package_id = p.id 
-//        WHERE c.user_id = ?`,
-//       [user_id]
-//     );
-
-//     // Process image URLs
-//     const cartItemsWithUrls = cartItems.map(item => ({
-//       ...item,
-//       image_url: item.image_url
-//         ? `${req.protocol}://${req.get('host')}/uploads/packages/${item.image_url}`
-//         : null
-//     }));
-
-//     res.json(cartItemsWithUrls);
-//   } catch (err) {
-//     console.error('Error fetching cart:', err.stack);
-//     res.status(500).json({ message: 'Server error', error: err.message });
-//   }
-// };
 
 exports.getCart = async (req, res) => {
 
@@ -80,6 +48,7 @@ exports.getCart = async (req, res) => {
     const [cartItems] = await db.query(
       `SELECT 
         c.id, 
+        c.package_id,  
         c.quantity, 
         p.title AS package_name, 
         p.price,

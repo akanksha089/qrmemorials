@@ -193,9 +193,10 @@ exports.getAllOrders = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
+
 // exports.getAllOrdersAPI = catchAsyncErrors(async (req, res, next) => {
 //   try {
-//     // 1. Get orders with shipping, billing, payment details
+//     // 1. Get orders with billing, shipping, and payment details
 //     const [orders] = await db.query(`
 //       SELECT 
 //         o.id AS order_id,
@@ -234,7 +235,7 @@ exports.getAllOrders = catchAsyncErrors(async (req, res, next) => {
 //       ORDER BY o.id DESC
 //     `);
 
-//     // 2. Get order items with package (product) details
+//     // 2. Get order items with package details
 //     const [items] = await db.query(`
 //       SELECT 
 //         oi.order_id,
@@ -248,23 +249,38 @@ exports.getAllOrders = catchAsyncErrors(async (req, res, next) => {
 //       LEFT JOIN packages pkg ON oi.product_id = pkg.id
 //     `);
 
-//     // 3. Attach items to corresponding orders
+//     // 3. Process and group products with features and image handling
 //     const ordersWithItems = orders.map(order => {
 //       const products = items
 //         .filter(item => item.order_id === order.order_id)
-//         .map(product => ({
-//           product_id: product.product_id,
-//           quantity: product.quantity,
-//           price: product.price,
-//           name: product.name,
-//           features: JSON.parse(product.features || "[]"),
-//           image: product.image?`${req.protocol}://${req.get('host')}/uploads/packages/${product.image}`
-//             :  null
-//         }));
-//       return { ...order, products };
+//         .map(product => {
+//           let parsedFeatures = [];
+//           try {
+//             parsedFeatures = product.features ? JSON.parse(product.features) : [];
+//             if (!Array.isArray(parsedFeatures)) parsedFeatures = [];
+//           } catch (e) {
+//             parsedFeatures = [];
+//           }
+
+//           return {
+//             product_id: product.product_id,
+//             quantity: product.quantity,
+//             price: product.price,
+//             name: product.name || "Unknown Product",
+//             features: parsedFeatures,
+//             image: product.image
+//               ? `${req.protocol}://${req.get("host")}/uploads/packages/${product.image}`
+//               : null
+//           };
+//         });
+
+//       return {
+//         ...order,
+//         products
+//       };
 //     });
 
-//     // 4. Return JSON for React frontend
+//     // 4. Return API response
 //     res.status(200).json({
 //       success: true,
 //       orders: ordersWithItems
@@ -278,12 +294,12 @@ exports.getAllOrders = catchAsyncErrors(async (req, res, next) => {
 
 exports.getAllOrdersAPI = catchAsyncErrors(async (req, res, next) => {
   try {
-    // 1. Get orders with billing, shipping, and payment details
+    // 1. Get all orders with billing, shipping, and payment details
     const [orders] = await db.query(`
       SELECT 
         o.id AS order_id,
         o.total_amount,
-        o.payment_status,
+        o.payment_status AS order_payment_status,
         o.order_status,
         o.created_at AS order_created_at,
 
@@ -307,7 +323,7 @@ exports.getAllOrdersAPI = catchAsyncErrors(async (req, res, next) => {
 
         p.method AS payment_method,
         p.amount AS payment_amount,
-        p.status AS payment_status,
+        p.status AS payment_record_status,
         p.transaction_id AS payment_transaction_id
 
       FROM orders o
@@ -331,17 +347,18 @@ exports.getAllOrdersAPI = catchAsyncErrors(async (req, res, next) => {
       LEFT JOIN packages pkg ON oi.product_id = pkg.id
     `);
 
-    // 3. Process and group products with features and image handling
+    // 3. Process and structure final orders with products
     const ordersWithItems = orders.map(order => {
       const products = items
-        .filter(item => item.order_id === order.order_id)
+        .filter(item => Number(item.order_id) === Number(order.order_id))
         .map(product => {
           let parsedFeatures = [];
+
           try {
             parsedFeatures = product.features ? JSON.parse(product.features) : [];
             if (!Array.isArray(parsedFeatures)) parsedFeatures = [];
-          } catch (e) {
-            parsedFeatures = [];
+          } catch (err) {
+            console.warn("❌ Failed to parse features for product:", product.product_id, err.message);
           }
 
           return {
@@ -357,23 +374,61 @@ exports.getAllOrdersAPI = catchAsyncErrors(async (req, res, next) => {
         });
 
       return {
-        ...order,
+        order_id: order.order_id,
+        total_amount: order.total_amount,
+        order_status: order.order_status,
+        payment_status: order.order_payment_status,
+        created_at: order.order_created_at,
+
+        shipping: {
+          first_name: order.shipping_first_name,
+          last_name: order.shipping_last_name,
+          country: order.shipping_country,
+          address: order.shipping_address,
+          city: order.shipping_city,
+          state: order.shipping_state,
+          postal_code: order.shipping_postal_code
+        },
+
+        billing: {
+          first_name: order.billing_first_name,
+          last_name: order.billing_last_name,
+          email: order.billing_email,
+          phone: order.billing_phone,
+          country: order.billing_country,
+          address: order.billing_address,
+          city: order.billing_city,
+          state: order.billing_state,
+          postal_code: order.billing_postal_code
+        },
+
+        payment: {
+          method: order.payment_method,
+          amount: order.payment_amount,
+          status: order.payment_record_status,
+          transaction_id: order.payment_transaction_id
+        },
+
         products
       };
     });
+console.log("✅ Orders found:", orders.length);
+console.log("✅ Order Items found:", items.length);
 
-    // 4. Return API response
+console.log("Sample order ID:", orders[0]?.order_id);
+console.log("Sample item order ID:", items[0]?.order_id);
+console.log('products data', ordersWithItems[0]?.products);
+    // 4. Return structured API response
     res.status(200).json({
       success: true,
       orders: ordersWithItems
     });
 
   } catch (err) {
-    console.error("Error fetching orders:", err);
+    console.error("❌ Error fetching orders:", err);
     return next(new ErrorHandler("Unable to fetch orders", 500));
   }
 });
-
 
 
 exports.getOrderById = catchAsyncErrors(async (req, res, next) => {
