@@ -182,7 +182,10 @@ export default function Profile() {
 
     // useEffect(() => {
     //     const fetchData = async () => {
-    //         const emailToUse = userEmail || emailUser;
+    //         const params = new URLSearchParams(location.search);
+    //         const emailFromUrl = params.get("email");
+
+    //         const emailToUse = userEmail || emailUser || emailFromUrl;
 
     //         try {
     //             const res = await axios.get(`${API_BASE_URL}/api/v1/biography/${packageId}`, {
@@ -221,56 +224,55 @@ export default function Profile() {
     //     };
 
     //     fetchData();
-    // }, [packageId, userEmail, accessId, emailUser]);
+    // }, [packageId, userEmail, accessId, emailUser, location.search]);
 
+useEffect(() => {
+    const fetchData = async () => {
+        const params = new URLSearchParams(location.search);
+        const emailFromUrl = params.get("email");
 
+        const emailToUse = userEmail || emailUser || emailFromUrl;
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const params = new URLSearchParams(location.search);
-            const emailFromUrl = params.get("email");
+        try {
+            const res = await axios.get(`${API_BASE_URL}/api/v1/biography/${packageId}`, {
+                params: {
+                    email: emailToUse,
+                    ...(accessId && { access_id: accessId }),
+                },
+            });
 
-            const emailToUse = userEmail || emailUser || emailFromUrl;
+            const { biography, status, ownerEmail, isOwner } = res.data;
 
-            try {
-                const res = await axios.get(`${API_BASE_URL}/api/v1/biography/${packageId}`, {
-                    params: {
-                        email: emailToUse,
-                        ...(accessId && { access_id: accessId }),
-                    },
-                });
+            if (isOwner) {
+                // ✅ Owner always gets access, even if biography is null
+                setBiography(biography);
+                setIsPrivate(false);
+                setAccessStatus("owner");
+                return;
+            }
 
-                const { biography, status, ownerEmail } = res.data;
-                const isOwner = userEmail && userEmail === ownerEmail?.toLowerCase();
-
-                if (!isOwner && !accessId && !biography) {
-                    setBiography(null);
-                    setIsPrivate(true);
-                    setAccessStatus(status || "unauthorized");
-                    return;
-                }
-
-                if (biography) {
-                    setBiography(biography);
-                    setIsPrivate(false);
-                    setAccessStatus("approved");
-                } else {
-                    setBiography(null);
-                    setIsPrivate(true);
-                    setAccessStatus(status || "pending");
-                }
-
-            } catch (err) {
-                console.error("❌ Error fetching biography:", err);
+            if (biography) {
+                // ✅ Public or approved access
+                setBiography(biography);
+                setIsPrivate(false);
+                setAccessStatus("approved");
+            } else {
+                // ❌ Not owner, no bio, and accessId (if any) is not approved
                 setBiography(null);
                 setIsPrivate(true);
-                setAccessStatus("error");
+                setAccessStatus(status || "unauthorized");
             }
-        };
 
-        fetchData();
-    }, [packageId, userEmail, accessId, emailUser, location.search]);
+        } catch (err) {
+            console.error("❌ Error fetching biography:", err);
+            setBiography(null);
+            setIsPrivate(true);
+            setAccessStatus("error");
+        }
+    };
 
+    fetchData();
+}, [packageId, userEmail, accessId, emailUser, location.search]);
 
 
 

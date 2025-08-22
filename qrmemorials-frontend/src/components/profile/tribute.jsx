@@ -4,7 +4,7 @@ import moment from "moment"; // for time formatting
 function Tribute({ tributes }) {
   return (
     <div className="space-y-6 py-2">
-      {tributes.map((item) => (
+      {tributes?.map((item) => (
         <div
           key={item.id}
           className="border border-gray-300 dark:border-gray-600 bg-transparent p-4 rounded-md"

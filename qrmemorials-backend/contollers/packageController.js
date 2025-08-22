@@ -868,10 +868,14 @@ exports.updatePackageTributes = catchAsyncErrors(async (req, res, next) => {
 
 
 exports.apiGetAllTributes = catchAsyncErrors(async (req, res, next) => {
-  const [rows] = await db.query("SELECT * FROM package_tributes");
+  const { packageId } = req.params;
+  const [rows] = await db.query(
+    "SELECT * FROM package_tributes WHERE package_id = ?",
+    [packageId]
+  );
 
   if (!rows.length) {
-    return res.status(404).json({ success: false, message: "No tributes found" });
+    return res.status(404).json({ success: false, message: "No tributes found for this package" });
   }
 
   const baseUrl = `${req.protocol}://${req.get("host")}/uploads/packages`;
@@ -907,82 +911,181 @@ exports.apiGetSingleTributes = catchAsyncErrors(async (req, res, next) => {
   res.status(200).json({ success: true, tributes });
 });
 
+// exports.viewBiography = async (req, res) => {
+//   try {
+//     const { packageId } = req.params;
+//     const accessId = req.query.access_id?.trim();
+//     const requesterEmail = req.query.email?.trim().toLowerCase();
+
+//     console.log('REQUEST for packageId:', packageId);
+//     console.log('Requester email:', requesterEmail);
+//     console.log('Access ID:', accessId);
+
+//     // ✅ Join with users to get owner email
+//     const [[bioRow]] = await db.query(
+//       `
+//       SELECT 
+//         pb.*, 
+//         u.email AS owner_email 
+//       FROM package_biographies pb
+//       JOIN users u ON pb.owner_id = u.id
+//       WHERE pb.package_id = ?
+//       `,
+//       [packageId]
+//     );
+
+//     if (!bioRow) {
+//       console.log('No biography found');
+//       return res.status(404).json({ success: false, message: 'Biography not found' });
+//     }
+
+//     const ownerEmail = bioRow.owner_email?.trim().toLowerCase();
+//     const isPrivate = bioRow.account_type === 'private';
+
+//     console.log('Owner email from DB:', ownerEmail);
+//     console.log('Is private:', isPrivate);
+
+//     // ✅ Owner access
+//     if (requesterEmail && requesterEmail === ownerEmail) {
+//       console.log('Access granted: OWNER');
+//       return res.json({ success: true, biography: bioRow, ownerEmail });
+//     }
+
+//     // ✅ Public profile
+//     if (!isPrivate) {
+//       console.log('Access granted: PUBLIC');
+//       return res.json({ success: true, biography: bioRow, ownerEmail });
+//     }
+
+//     // ✅ Access with accessId
+//     if (accessId && requesterEmail) {
+//       const [[accessRow]] = await db.query(
+//         `SELECT status FROM access_requests WHERE package_id = ? AND access_id = ? AND requester_email = ?`,
+//         [packageId, accessId, requesterEmail]
+//       );
+
+//       console.log('Access request status:', accessRow?.status);
+
+//       if (accessRow?.status === 'approved') {
+//         console.log('Access granted: APPROVED ACCESS_ID');
+//         return res.json({ success: true, biography: bioRow, ownerEmail });
+//       }
+
+//       console.log('Access denied: ACCESS_ID not approved');
+//       return res.json({
+//         success: true,
+//         biography: null,
+//         status: accessRow?.status || null,
+//         ownerEmail,
+//       });
+//     }
+
+//     // ❌ Block all other access
+//     console.log('Access denied: NO ACCESS');
+//     return res.json({
+//       success: true,
+//       biography: null,
+//       status: null,
+//       ownerEmail,
+//     });
+//   } catch (err) {
+//     console.error('Error in viewBiography:', err);
+//     return res.status(500).json({ success: false, message: 'Server error' });
+//   }
+// };
+
+// controllers/biographyController.js
 exports.viewBiography = async (req, res) => {
   try {
     const { packageId } = req.params;
     const accessId = req.query.access_id?.trim();
     const requesterEmail = req.query.email?.trim().toLowerCase();
 
-    console.log('REQUEST for packageId:', packageId);
-    console.log('Requester email:', requesterEmail);
-    console.log('Access ID:', accessId);
+    if (!packageId) {
+      return res.status(400).json({ success: false, message: "Missing package ID" });
+    }
 
-    // ✅ Join with users to get owner email
+    // Optional: Get latest purchaser (for info only)
+    const [[ownerRow]] = await db.query(
+      `SELECT u.email AS owner_email
+       FROM orders o
+       JOIN users u ON o.user_id = u.id
+       WHERE o.package_id = ?
+       ORDER BY o.created_at DESC
+       LIMIT 1`,
+      [packageId]
+    );
+    const ownerEmail = ownerRow?.owner_email?.toLowerCase() || null;
+
+    // 1. Check if requester has purchased this package
+    let isOwner = false;
+    if (requesterEmail) {
+      const [[purchaseRow]] = await db.query(
+        `SELECT 1
+         FROM orders o
+         JOIN users u ON o.user_id = u.id
+         WHERE o.package_id = ? AND LOWER(u.email) = ?
+         LIMIT 1`,
+        [packageId, requesterEmail]
+      );
+      isOwner = !!purchaseRow;
+    }
+
+    // 2. Fetch biography (if it exists)
     const [[bioRow]] = await db.query(
-      `
-      SELECT 
-        pb.*, 
-        u.email AS owner_email 
-      FROM package_biographies pb
-      JOIN users u ON pb.owner_id = u.id
-      WHERE pb.package_id = ?
-      `,
+      `SELECT * FROM package_biographies WHERE package_id = ?`,
       [packageId]
     );
 
-    if (!bioRow) {
-      console.log('No biography found');
-      return res.status(404).json({ success: false, message: 'Biography not found' });
-    }
-
-    const ownerEmail = bioRow.owner_email?.trim().toLowerCase();
-    const isPrivate = bioRow.account_type === 'private';
-
-    console.log('Owner email from DB:', ownerEmail);
-    console.log('Is private:', isPrivate);
-
-    // ✅ Owner access
-    if (requesterEmail && requesterEmail === ownerEmail) {
-      console.log('Access granted: OWNER');
-      return res.json({ success: true, biography: bioRow, ownerEmail });
-    }
-
-    // ✅ Public profile
-    if (!isPrivate) {
-      console.log('Access granted: PUBLIC');
-      return res.json({ success: true, biography: bioRow, ownerEmail });
-    }
-
-    // ✅ Access with accessId
-    if (accessId && requesterEmail) {
-      const [[accessRow]] = await db.query(
-        `SELECT status FROM access_requests WHERE package_id = ? AND access_id = ? AND requester_email = ?`,
-        [packageId, accessId, requesterEmail]
-      );
-
-      console.log('Access request status:', accessRow?.status);
-
-      if (accessRow?.status === 'approved') {
-        console.log('Access granted: APPROVED ACCESS_ID');
-        return res.json({ success: true, biography: bioRow, ownerEmail });
-      }
-
-      console.log('Access denied: ACCESS_ID not approved');
+    // 3. Owner always gets access (even if biography doesn't exist or is private)
+    if (isOwner) {
       return res.json({
         success: true,
-        biography: null,
-        status: accessRow?.status || null,
+        biography: bioRow || null,
         ownerEmail,
+        isOwner: true,
+        status: null,
       });
     }
 
-    // ❌ Block all other access
-    console.log('Access denied: NO ACCESS');
+    // 4. Public profile (non-private)
+    if (bioRow && bioRow.account_type !== 'private') {
+      return res.json({
+        success: true,
+        biography: bioRow,
+        ownerEmail,
+        isOwner: false,
+        status: null,
+      });
+    }
+
+    // 5. Check access request (if biography exists + accessId provided)
+    if (bioRow && accessId && requesterEmail) {
+      const [[accessRow]] = await db.query(
+        `SELECT status
+         FROM access_requests
+         WHERE package_id = ? AND access_id = ? AND requester_email = ?`,
+        [packageId, accessId, requesterEmail]
+      );
+
+      const accessApproved = accessRow?.status === 'approved';
+
+      return res.json({
+        success: true,
+        biography: accessApproved ? bioRow : null,
+        status: accessRow?.status || null,
+        ownerEmail,
+        isOwner: false,
+      });
+    }
+
+    // 6. No access
     return res.json({
       success: true,
       biography: null,
       status: null,
       ownerEmail,
+      isOwner: false,
     });
   } catch (err) {
     console.error('Error in viewBiography:', err);
@@ -1108,7 +1211,10 @@ Warm regards,
   }
 };
 
+
 exports.getAccessRequests = async (req, res) => {
+  const { packageId } = req.params;
+
   try {
     const [rows] = await db.query(
       `SELECT 
@@ -1118,7 +1224,9 @@ exports.getAccessRequests = async (req, res) => {
         ar.status,
         ar.access_id
        FROM access_requests ar
-       ORDER BY ar.created_at DESC`
+       WHERE ar.package_id = ?
+       ORDER BY ar.created_at DESC`,
+      [packageId] // this will safely inject the value into the query
     );
 
     const requests = rows.map((row) => ({
@@ -1126,7 +1234,7 @@ exports.getAccessRequests = async (req, res) => {
       name: row.name || "N/A",
       email: row.email,
       active: row.status === "approved",
-      accessId: row.access_id || null,   // include access_id here
+      accessId: row.access_id ?? null,
     }));
 
     res.json({ success: true, requests });
@@ -1135,7 +1243,6 @@ exports.getAccessRequests = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error", error: err.message });
   }
 };
-
 
 
 

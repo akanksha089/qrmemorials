@@ -218,7 +218,7 @@ const MyPackages = () => {
 
         const fetchRequests = async () => {
             try {
-                const res = await fetch(`${API_BASE_URL}/api/v1/access-requests`, {
+                const res = await fetch(`${API_BASE_URL}/api/v1/access-requests/${packageId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

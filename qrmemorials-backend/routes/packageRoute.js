@@ -140,7 +140,7 @@ router.route("/packages/gallery/:id").get( getPackageGallery);
 router.post("/packages/family", isApiAuthenticatedUser, createFamilyMembers);
 router.get("/packages/family/:packageId",  getFamilyMembers);
 router.put("/packages/family/:packageId", isApiAuthenticatedUser, updateFamilyMembers);
-router.get("/access-requests", isApiAuthenticatedUser, getAccessRequests);
+router.get("/access-requests/:packageId", isApiAuthenticatedUser, getAccessRequests);
 
 router.get('/biography/:packageId',  viewBiography);
 router.post('/:packageId/access-request',  requestAccess);
