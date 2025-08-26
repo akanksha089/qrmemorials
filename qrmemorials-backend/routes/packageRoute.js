@@ -27,7 +27,7 @@ const {
   updatePackageTributes,
   apiGetSingleTributes,
   apiGetAllTributes,
-  viewBiography, requestAccess, approveRequest, getAccessRequests
+  viewBiography, requestAccess, approveRequest, getAccessRequests, denyRequest
 } = require("../contollers/packageController");
 const { isAuthenticatedUser, authorizeRoles, isApiAuthenticatedUser } = require("../middleware/auth");
 const Model = require("../models/packageModel");
@@ -145,5 +145,6 @@ router.get("/access-requests/:packageId", isApiAuthenticatedUser, getAccessReque
 router.get('/biography/:packageId',  viewBiography);
 router.post('/:packageId/access-request',  requestAccess);
 router.post('/access-request/:requestId/approve', isApiAuthenticatedUser, approveRequest);
+router.post('/access-request/:requestId/deny', isApiAuthenticatedUser, denyRequest);
 
 module.exports = router;

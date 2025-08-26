@@ -911,90 +911,6 @@ exports.apiGetSingleTributes = catchAsyncErrors(async (req, res, next) => {
   res.status(200).json({ success: true, tributes });
 });
 
-// exports.viewBiography = async (req, res) => {
-//   try {
-//     const { packageId } = req.params;
-//     const accessId = req.query.access_id?.trim();
-//     const requesterEmail = req.query.email?.trim().toLowerCase();
-
-//     console.log('REQUEST for packageId:', packageId);
-//     console.log('Requester email:', requesterEmail);
-//     console.log('Access ID:', accessId);
-
-//     // ✅ Join with users to get owner email
-//     const [[bioRow]] = await db.query(
-//       `
-//       SELECT 
-//         pb.*, 
-//         u.email AS owner_email 
-//       FROM package_biographies pb
-//       JOIN users u ON pb.owner_id = u.id
-//       WHERE pb.package_id = ?
-//       `,
-//       [packageId]
-//     );
-
-//     if (!bioRow) {
-//       console.log('No biography found');
-//       return res.status(404).json({ success: false, message: 'Biography not found' });
-//     }
-
-//     const ownerEmail = bioRow.owner_email?.trim().toLowerCase();
-//     const isPrivate = bioRow.account_type === 'private';
-
-//     console.log('Owner email from DB:', ownerEmail);
-//     console.log('Is private:', isPrivate);
-
-//     // ✅ Owner access
-//     if (requesterEmail && requesterEmail === ownerEmail) {
-//       console.log('Access granted: OWNER');
-//       return res.json({ success: true, biography: bioRow, ownerEmail });
-//     }
-
-//     // ✅ Public profile
-//     if (!isPrivate) {
-//       console.log('Access granted: PUBLIC');
-//       return res.json({ success: true, biography: bioRow, ownerEmail });
-//     }
-
-//     // ✅ Access with accessId
-//     if (accessId && requesterEmail) {
-//       const [[accessRow]] = await db.query(
-//         `SELECT status FROM access_requests WHERE package_id = ? AND access_id = ? AND requester_email = ?`,
-//         [packageId, accessId, requesterEmail]
-//       );
-
-//       console.log('Access request status:', accessRow?.status);
-
-//       if (accessRow?.status === 'approved') {
-//         console.log('Access granted: APPROVED ACCESS_ID');
-//         return res.json({ success: true, biography: bioRow, ownerEmail });
-//       }
-
-//       console.log('Access denied: ACCESS_ID not approved');
-//       return res.json({
-//         success: true,
-//         biography: null,
-//         status: accessRow?.status || null,
-//         ownerEmail,
-//       });
-//     }
-
-//     // ❌ Block all other access
-//     console.log('Access denied: NO ACCESS');
-//     return res.json({
-//       success: true,
-//       biography: null,
-//       status: null,
-//       ownerEmail,
-//     });
-//   } catch (err) {
-//     console.error('Error in viewBiography:', err);
-//     return res.status(500).json({ success: false, message: 'Server error' });
-//   }
-// };
-
-// controllers/biographyController.js
 exports.viewBiography = async (req, res) => {
   try {
     const { packageId } = req.params;
@@ -1203,6 +1119,69 @@ Warm regards,
     });
   } catch (error) {
     console.error("Error approving request:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+
+exports.denyRequest = async (req, res) => {
+  const { requestId } = req.params;
+
+  try {
+    // 1. Check if request exists
+    const [existingRows] = await db.query(
+      `SELECT * FROM access_requests WHERE id = ?`,
+      [requestId]
+    );
+
+    if (existingRows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Request not found",
+      });
+    }
+
+    const requesterEmail = existingRows[0].requester_email;
+    const requesterName = existingRows[0].requester_name;
+    const packageId = existingRows[0].package_id;
+
+    // 2. Update status to denied
+    const [result] = await db.query(
+      `UPDATE access_requests SET status = 'denied' WHERE id = ? LIMIT 1`,
+      [requestId]
+    );
+
+    // 3. Optional: send email notifying denial
+    if (requesterEmail) {
+      // You can customize this message as per your need
+      await sendEmail({
+        email: requesterEmail,
+        subject: "Your Access Request has been Denied",
+        message: `
+Hi ${requesterName || 'there'},
+
+We wanted to inform you that your request to access Soul Link has unfortunately been denied.
+
+If you have any questions or believe this was a mistake, please feel free to reach out to us.
+
+Thank you for your understanding.
+
+Warm regards,  
+**The Soul Link Team**
+`
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Request denied and notification sent",
+    });
+  } catch (error) {
+    console.error("Error denying request:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error",

@@ -484,6 +484,38 @@ const MyPackages = () => {
         }
     };
 
+    const denyRequest = async (requestId) => {
+        try {
+            const res = await fetch(
+                `${API_BASE_URL}/api/v1/access-request/${requestId}/deny`,
+                {
+                    method: "POST", // or "PUT" depending on your backend route
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const data = await res.json();
+            if (data.success) {
+                setUsers((prev) =>
+                    prev.map((user) =>
+                        user.id === requestId
+                            ? { ...user, active: false, accessId: null } // mark inactive, clear accessId
+                            : user
+                    )
+                );
+                toast.success("Request denied successfully ❌");
+            } else {
+                toast.error(`Failed: ${data.message}`);
+            }
+        } catch (err) {
+            console.error("Denial error:", err);
+            toast.error("An error occurred while denying the request");
+        }
+    };
+
+
     return (
         <>
             <NavbarOne />
@@ -555,6 +587,7 @@ const MyPackages = () => {
                                 {activeTab === "User Requests" && <UserRequests
                                     users={users}
                                     approveRequest={approveRequest}
+                                    denyRequest={denyRequest}
                                 />}
                                 {activeTab === "QR Code" && <QRCodeTab
                                     packageId={packageId}

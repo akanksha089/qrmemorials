@@ -58,13 +58,13 @@ export default function AccountTab() {
                 <Link className="duration-300 hover:text-primary" to="/wishlist">Wishlist</Link>
             </li>
             {packages?.map(pkg => (
-                <Link
+                <a
                     key={pkg.id}
-                    to={`/my-packages/${pkg.id}`}
+                    href={`/my-packages/${pkg.id}`}
                     className={`py-3 lg:py-6 pl-6 lg:pl-12 ${current.includes(`/my-packages/${pkg.id}`) ? 'active text-primary' : ''
                         } duration-300 hover:text-primary`}>
                     {pkg.title}
-                </Link>
+                </a>
             ))}
 
             <li className={`py-3 lg:py-6 pl-6 lg:pl-12 ${current === '/login' ? 'active text-primary' : ''}`}>
